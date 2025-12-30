@@ -121,7 +121,7 @@
   }
 
   // Türkçe seslendirme (Web Speech API)
-  function playNarration(sceneId, text) {
+  function playNarration(sceneId, text, options = {}) {
     if (!audioEnabled) return;
     
     // Web Speech API kontrolü
@@ -130,8 +130,11 @@
       return;
     }
     
-    // Önceki seslendirmeyi durdur
-    if (window.speechSynthesis.speaking) {
+    // Mini dönüt seslendirmesi ise önceki seslendirmeyi durdurma
+    const isFeedback = options.isFeedback || false;
+    
+    // Önceki seslendirmeyi durdur (sadece mini dönüt değilse)
+    if (!isFeedback && window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
     }
     
@@ -150,33 +153,67 @@
     
     // Türkçe dil ayarı
     utterance.lang = 'tr-TR';
-    utterance.rate = 0.9; // Konuşma hızı (0.1 - 10)
-    utterance.pitch = 1.0; // Ses tonu (0 - 2)
-    utterance.volume = 0.8; // Ses seviyesi (0 - 1)
+    utterance.rate = options.rate || 0.9; // Konuşma hızı (0.1 - 10), mini dönüt için 1.2
+    utterance.pitch = options.pitch || 1.2; // Ses tonu (0 - 2), kadın sesi için
+    utterance.volume = options.volume || 0.8; // Ses seviyesi (0 - 1)
     
-    // Türkçe ses seçimi (varsa)
+    // Türkçe kadın sesi seçimi
+    function selectTurkishFemaleVoice(voices) {
+      // Önce Türkçe kadın seslerini ara
+      let turkishFemaleVoice = voices.find(voice => {
+        const name = voice.name.toLowerCase();
+        const lang = voice.lang.toLowerCase();
+        return (lang.startsWith('tr') || name.includes('turkish') || name.includes('türkçe')) &&
+               (name.includes('female') || name.includes('kadın') || name.includes('woman') || 
+                name.includes('zira') || name.includes('aylin') || voice.gender === 'female');
+      });
+      
+      // Kadın sesi bulunamazsa, Türkçe seslerden yüksek perdeli olanı seç
+      if (!turkishFemaleVoice) {
+        const turkishVoices = voices.filter(voice => {
+          const name = voice.name.toLowerCase();
+          const lang = voice.lang.toLowerCase();
+          return lang.startsWith('tr') || name.includes('turkish') || name.includes('türkçe');
+        });
+        
+        // Yüksek perde (pitch) değerine sahip sesi seç (genellikle kadın sesleri daha yüksek)
+        if (turkishVoices.length > 0) {
+          turkishFemaleVoice = turkishVoices.reduce((prev, current) => {
+            // Bazı tarayıcılarda defaultPitch özelliği olabilir
+            return (current.defaultPitch || 1.0) > (prev.defaultPitch || 1.0) ? current : prev;
+          });
+        }
+      }
+      
+      // Hala bulunamazsa, herhangi bir Türkçe ses
+      if (!turkishFemaleVoice) {
+        turkishFemaleVoice = voices.find(voice => {
+          const name = voice.name.toLowerCase();
+          const lang = voice.lang.toLowerCase();
+          return lang.startsWith('tr') || name.includes('turkish') || name.includes('türkçe');
+        });
+      }
+      
+      return turkishFemaleVoice;
+    }
+    
     const voices = window.speechSynthesis.getVoices();
-    const turkishVoice = voices.find(voice => 
-      voice.lang.startsWith('tr') || 
-      voice.name.toLowerCase().includes('turkish') ||
-      voice.name.toLowerCase().includes('türkçe')
-    );
+    const selectedVoice = selectTurkishFemaleVoice(voices);
     
-    if (turkishVoice) {
-      utterance.voice = turkishVoice;
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      // Kadın sesi için pitch'i biraz artır
+      utterance.pitch = 1.2;
     }
     
     // Sesler yüklenmemişse bekle
     if (voices.length === 0) {
       window.speechSynthesis.onvoiceschanged = () => {
         const updatedVoices = window.speechSynthesis.getVoices();
-        const turkishVoice = updatedVoices.find(voice => 
-          voice.lang.startsWith('tr') || 
-          voice.name.toLowerCase().includes('turkish') ||
-          voice.name.toLowerCase().includes('türkçe')
-        );
-        if (turkishVoice) {
-          utterance.voice = turkishVoice;
+        const selectedVoice = selectTurkishFemaleVoice(updatedVoices);
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+          utterance.pitch = 1.2;
         }
         window.speechSynthesis.speak(utterance);
       };

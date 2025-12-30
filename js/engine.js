@@ -29,19 +29,27 @@
     "hava_kirliligi": [ { indicator: "hava", delta: +1, delay: 1 } ],
     "odun_kesimi": [ { indicator: "hava", delta: +1, delay: 2 }, { indicator: "biyo", delta: +1, delay: 3 } ],
     "alternatif_yakit": [ { indicator: "hava", delta: -1, delay: 2 } ],
-    // İnsan Etkisi
-    "konfor_artti": [ { indicator: "insan", delta: +1, delay: 0 } ],
-    "guvenlik_artti": [ { indicator: "insan", delta: +1, delay: 0 } ],
-    "erisimi_zorlasti": [ { indicator: "insan", delta: +1, delay: 1 } ],
-    "maliyet_artti": [ { indicator: "insan", delta: +1, delay: 1 } ],
-    "emek_artti": [ { indicator: "insan", delta: +1, delay: 0 } ],
-    "ekonomi_artti": [ { indicator: "insan", delta: -1, delay: 0 } ],
-    "kalabalik_artti": [ { indicator: "insan", delta: +1, delay: 0 } ],
-    "turizm_sinirlandi": [ { indicator: "insan", delta: -1, delay: 0 } ],
-    "turizm_serbest": [ { indicator: "insan", delta: +1, delay: 0 } ],
-    "gurultu_artti": [ { indicator: "biyo", delta: +1, delay: 1 } ],
-    "kontrol_var": [ { indicator: "insan", delta: -1, delay: 0 } ],
-    "kontrol_yok": [ { indicator: "insan", delta: +1, delay: 0 } ]
+    // İnsan Etkisi (daha dengeli gecikmeler - insan etkisi zamanla birikir)
+    // İnsan Etkisi: İnsanların doğaya olan etkisini gösterir
+    // +1 = İnsan etkisi arttı (daha fazla müdahale, daha az kontrol, daha fazla kalabalık)
+    // -1 = İnsan etkisi azaldı (koruma önlemleri, kontrol, sınırlamalar)
+    "konfor_artti": [ { indicator: "insan", delta: +1, delay: 2 } ], // Konfor arttı -> Daha fazla insan etkisi (mantıklı)
+    "guvenlik_artti": [ { indicator: "insan", delta: +1, delay: 2 } ], // Güvenlik arttı -> Daha fazla insan etkisi (mantıklı - altyapı artışı)
+    "erisimi_zorlasti": [ { indicator: "insan", delta: -1, delay: 2 } ], // Erişim zorlaştı -> İnsan etkisi AZALIR (daha az insan erişebilir)
+    "maliyet_artti": [ { indicator: "insan", delta: +1, delay: 1 } ], // Maliyet arttı -> İnsan etkisi artabilir (kaynak kullanımı)
+    "emek_artti": [ { indicator: "insan", delta: -1, delay: 2 } ], // Emek arttı -> İnsan etkisi AZALIR (koruma için çaba gösterildi)
+    "ekonomi_artti": [ { indicator: "insan", delta: +1, delay: 2 } ], // Ekonomi arttı -> İnsan etkisi ARTAR (daha fazla aktivite)
+    "kalabalik_artti": [ { indicator: "insan", delta: +1, delay: 1 } ], // Kalabalık arttı -> İnsan etkisi artar (mantıklı)
+    "turizm_sinirlandi": [ { indicator: "insan", delta: -1, delay: 2 } ], // Turizm sınırlandı -> İnsan etkisi azalır (mantıklı)
+    "turizm_serbest": [ { indicator: "insan", delta: +1, delay: 1 } ], // Turizm serbest -> İnsan etkisi artar (mantıklı)
+    "gurultu_artti": [ { indicator: "biyo", delta: +1, delay: 1 } ], // Gürültü arttı -> Canlı çeşitliliği etkilenir (insan etkisi değil)
+    "kontrol_var": [ { indicator: "insan", delta: -1, delay: 2 } ], // Kontrol var -> İnsan etkisi azalır (mantıklı)
+    "kontrol_yok": [ { indicator: "insan", delta: +1, delay: 1 } ], // Kontrol yok -> İnsan etkisi artar (mantıklı)
+    // Dere yatağı düzenlemeleri
+    "dere_yatagi_daraldi": [ { indicator: "su", delta: +1, delay: 1 }, { indicator: "biyo", delta: +1, delay: 2 } ], // Dere daraltıldı -> Su dengesi ve canlı çeşitliliği etkilenir
+    "dere_yatagi_dogal": [ { indicator: "su", delta: -1, delay: 2 }, { indicator: "biyo", delta: -1, delay: 1 } ], // Dere doğal -> Su dengesi ve canlı çeşitliliği iyileşir
+    // Yol yapımı
+    "yol_betonlasti": [ { indicator: "toprak", delta: +1, delay: 1 }, { indicator: "su", delta: +1, delay: 2 } ] // Yol betonlandı -> Toprak sıkışır, su dengesi etkilenir
   };
 
   // Event (Gözlem Notu) kuralları

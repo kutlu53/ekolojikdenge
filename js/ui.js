@@ -117,6 +117,7 @@
   
   function updateProgress(season) {
     const progressFill = document.getElementById("progressFill");
+    const progressLabel = document.querySelector(".progress-label");
     const seasonMarkers = document.querySelectorAll(".season-marker");
     
     if (!progressFill) return;
@@ -131,6 +132,35 @@
     
     const progress = seasonProgress[season] || 0;
     progressFill.style.width = progress + "%";
+    
+    // Progress label'ı mevsim adıyla güncelle
+    if (progressLabel && season) {
+      progressLabel.textContent = `Yıl İlerlemesi - ${season}`;
+    }
+    
+    // Mevsim renklerini ayarla
+    const seasonColors = {
+      "İlkbahar": {
+        gradient: "linear-gradient(90deg, #4caf50 0%, #8bc34a 50%, #66bb6a 100%)",
+        shadow: "rgba(76, 175, 80, 0.4)"
+      },
+      "Yaz": {
+        gradient: "linear-gradient(90deg, #ffc107 0%, #ffb74d 50%, #ffa726 100%)",
+        shadow: "rgba(255, 193, 7, 0.4)"
+      },
+      "Sonbahar": {
+        gradient: "linear-gradient(90deg, #ff9800 0%, #ff6f00 50%, #e65100 100%)",
+        shadow: "rgba(255, 152, 0, 0.4)"
+      },
+      "Kış": {
+        gradient: "linear-gradient(90deg, #2196f3 0%, #64b5f6 50%, #90caf9 100%)",
+        shadow: "rgba(33, 150, 243, 0.4)"
+      }
+    };
+    
+    const colors = seasonColors[season] || seasonColors["İlkbahar"];
+    progressFill.style.background = colors.gradient;
+    progressFill.style.boxShadow = `0 0 20px ${colors.shadow}`;
     
     // Aktif mevsimi işaretle
     seasonMarkers.forEach(marker => {
@@ -162,21 +192,54 @@
     }
     
     // Rol, mevsim, metin - her zaman göster
-    elRole.textContent = scene.role === "ari" ? "Arı 🐝" : (scene.role === "agac" ? "Ağaç 🌳" : scene.role);
+    // Role icon ve text'i güncelle
+    const roleIcon = document.getElementById("roleIcon");
+    const roleText = document.getElementById("roleText");
+    
+    if (roleIcon && roleText) {
+      if (scene.role === "ari") {
+        roleIcon.textContent = "🐝";
+        roleText.textContent = "Arı";
+      } else if (scene.role === "agac") {
+        roleIcon.textContent = "🌳";
+        roleText.textContent = "Ağaç";
+      } else {
+        roleIcon.textContent = "";
+        roleText.textContent = scene.role || "";
+      }
+    } else {
+      // Fallback: Eski yöntem
+      elRole.textContent = scene.role === "ari" ? "Arı 🐝" : (scene.role === "agac" ? "Ağaç 🌳" : scene.role);
+    }
     elSeason.textContent = scene.season || "";
     elSceneText.textContent = scene.text || "";
     
-    // Tüm metinleri seslendir (eğer metin varsa)
+    // Tüm metinleri seslendir (eğer metin varsa ve mini dönüt yoksa)
+    // Mini dönüt seslendirmesi devam ediyorsa bekleyelim
     if (scene.text && window.AudioManager && window.AudioManager.playNarration) {
-      // Önceki seslendirmeyi durdur
+      // Mini dönüt seslendirmesi devam ediyorsa bekle
+      const waitForFeedback = () => {
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          // Mini dönüt seslendirmesi devam ediyor, bekle
+          setTimeout(waitForFeedback, 200);
+        } else {
+          // Seslendirme bitti, yeni metni seslendir
+          setTimeout(() => {
+            window.AudioManager.playNarration(scene.id, scene.text);
+          }, 300);
+        }
+      };
+      
+      // Önceki seslendirmeyi durdur (sadece mini dönüt değilse)
       if (window.AudioManager.stopNarration) {
-        window.AudioManager.stopNarration();
+        // Mini dönüt kontrolü yap
+        if (!window.speechSynthesis || !window.speechSynthesis.speaking) {
+          window.AudioManager.stopNarration();
+        }
       }
       
-      // Yeni metni seslendir
-      setTimeout(() => {
-        window.AudioManager.playNarration(scene.id, scene.text);
-      }, 500);
+      // Yeni metni seslendir (mini dönüt bitene kadar bekle)
+      waitForFeedback();
     }
     
     // Fade-in sınıfını kaldır (eğer varsa)
@@ -240,6 +303,11 @@
     }
     // Seçenekler
     elChoices.innerHTML = "";
+    // Butonları her zaman görünür yap
+    elChoices.style.opacity = '1';
+    elChoices.style.pointerEvents = 'auto';
+    elChoices.style.transition = 'opacity 0.3s ease';
+    
     // Seçenek butonları veya final butonları
     if (scene.choices && Array.isArray(scene.choices) && scene.choices.length > 0) {
       // Seçenekler varsa sadece seçenekleri göster
@@ -249,6 +317,10 @@
         btn.textContent = choice.label;
           btn.onclick = (e) => {
             lockButtons();
+            // Mevcut seslendirmeyi durdur
+            if (window.AudioManager && window.AudioManager.stopNarration) {
+              window.AudioManager.stopNarration();
+            }
             // Ses efekti
             if (window.AudioManager) {
               window.AudioManager.playSound('click');
@@ -261,43 +333,61 @@
               window.MagicalEffects.starBurst(x, y);
             }
             
+            // Seçenekleri gizle (soru kaybolsun)
+            elChoices.style.opacity = '0';
+            elChoices.style.pointerEvents = 'none';
+            elChoices.style.transition = 'opacity 0.3s ease';
+            
             // Seçim dönütü göster
             if (window.ChoiceFeedback) {
               const currentState = window.GameEngine.getState();
               const effects = window.ChoiceFeedback.analyze(choice, currentState);
               if (effects && effects.length > 0) {
+                // Dönüt tamamlandığında devam et
+                window.ChoiceFeedback.onComplete = () => {
+                  // Karar geçmişine ekle
+                  if (window.DecisionHistory && window.DecisionHistory.add) {
+                    const state = window.GameEngine.getState();
+                    window.DecisionHistory.add(scene, choice, state);
+                  }
+                  
+                  // Oyun motoruna seçimi ilet
+                  window.GameEngine.choose(choice.id);
+                };
+                
                 setTimeout(() => {
                   window.ChoiceFeedback.show(effects, choice.label);
                 }, 300);
+              } else {
+                // Etki yoksa direkt devam et
+                // Butonları tekrar görünür yap
+                elChoices.style.opacity = '1';
+                elChoices.style.pointerEvents = 'auto';
+                
+                if (window.DecisionHistory && window.DecisionHistory.add) {
+                  const state = window.GameEngine.getState();
+                  window.DecisionHistory.add(scene, choice, state);
+                }
+                window.GameEngine.choose(choice.id);
               }
-            }
-            
-            // Karar geçmişine ekle
-            if (window.DecisionHistory && window.DecisionHistory.add) {
-              const currentState = window.GameEngine.getState();
-              window.DecisionHistory.add(scene, choice, currentState);
-            }
-            
-            // Oyun motoruna seçimi ilet (dönüt gösterildikten sonra)
-            setTimeout(() => {
+            } else {
+              // Feedback sistemi yoksa direkt devam et
+              // Butonları tekrar görünür yap
+              elChoices.style.opacity = '1';
+              elChoices.style.pointerEvents = 'auto';
+              
+              if (window.DecisionHistory && window.DecisionHistory.add) {
+                const state = window.GameEngine.getState();
+                window.DecisionHistory.add(scene, choice, state);
+              }
               window.GameEngine.choose(choice.id);
-            }, 4500); // Dönüt 4 saniye gösteriliyor, sonra oyun devam ediyor
+            }
           };
         elChoices.appendChild(btn);
       });
     } else if (scene.id && scene.id.startsWith("final_")) {
-      // Final sahnesi için özel butonlar
-      const btnRestart = document.createElement("button");
-      btnRestart.className = "choice-btn final-btn";
-      btnRestart.textContent = "Yeniden Oyna";
-      btnRestart.onclick = () => GameEngine.restart();
-      elChoices.appendChild(btnRestart);
-
-      const btnHome = document.createElement("button");
-      btnHome.className = "choice-btn final-btn";
-      btnHome.textContent = "Ana Sayfa";
-      btnHome.onclick = () => { window.location.href = "index.html"; };
-      elChoices.appendChild(btnHome);
+      // Final sahnesi için özel ekran göster
+      showFinalScreen(state, scene);
     } else {
       // Seçenek yoksa ve final değilse "Devam" butonu göster
       const btn = document.createElement("button");
@@ -305,10 +395,388 @@
       btn.textContent = "Devam";
       btn.onclick = () => {
         lockButtons(100);
+        // Mevcut seslendirmeyi durdur
+        if (window.AudioManager && window.AudioManager.stopNarration) {
+          window.AudioManager.stopNarration();
+        }
+        if (window.AudioManager) window.AudioManager.playSound('click');
         window.GameEngine.next();
       };
       elChoices.appendChild(btn);
     }
+  }
+
+  // Final ekranı göster
+  function showFinalScreen(state, scene) {
+    // Mevcut içeriği temizle
+    elChoices.innerHTML = "";
+    
+    // Final ekranı container'ı oluştur
+    const finalContainer = document.createElement('div');
+    finalContainer.className = 'final-screen';
+    finalContainer.innerHTML = `
+      <div class="final-content">
+        <div class="final-header">
+          <h2>🌍 Yıl Sonu Raporu</h2>
+          <p class="final-subtitle">Seçimlerinizin etkileri ve ekolojik denge</p>
+        </div>
+        
+        <div class="final-sections">
+          <!-- Seçim Özeti Bölümü -->
+          <div class="final-section">
+            <h3>📊 Senin Seçimlerin</h3>
+            <p class="section-description">
+              Bir yıl boyunca verdiğin kararlar ve bu kararların doğaya olan etkileri. 
+              Her seçim, doğadaki dengeyi etkiledi. Bakalım hangi seçimlerin ne gibi sonuçlar doğurdu?
+            </p>
+            <div id="finalDecisions" class="decisions-list"></div>
+          </div>
+          
+          <!-- Parametre Sonuçları -->
+          <div class="final-section">
+            <h3>📈 Ekolojik Durum</h3>
+            <p class="section-description">
+              Doğadaki dört önemli sistemin durumu. Her biri birbiriyle bağlantılı. 
+              Su döngüsü, toprak sağlığı, hava kalitesi ve canlı çeşitliliği birbirini etkiler. 
+              Yıldızlar ne kadar çoksa, o sistem o kadar sağlıklı demektir.
+            </p>
+            <div id="finalIndicators" class="final-indicators"></div>
+          </div>
+          
+          <!-- Ekolojik Denge Vurgusu -->
+          <div class="final-section final-message">
+            <h3>🌱 Ekolojik Denge Neden Önemli?</h3>
+            <p class="section-description">
+              Doğadaki her canlı birbirine bağlıdır. Bir ağacın korunması, su döngüsünü etkiler. 
+              Su döngüsü, toprak sağlığını etkiler. Toprak sağlığı, canlı çeşitliliğini etkiler. 
+              Küçük kararlarımız bile büyük etkilere sahip olabilir.
+            </p>
+            <div id="finalMessage" class="ecological-message"></div>
+          </div>
+          
+          <!-- Kış Sonu Mesajı -->
+          <div class="final-section final-winter-message">
+            <h3>❄️ Yıl Sonu Mesajı</h3>
+            <div id="finalWinterMessage" class="winter-message"></div>
+          </div>
+        </div>
+        
+        <div class="final-actions">
+          <button class="choice-btn final-btn" id="finalRestart">🔄 Yeniden Oyna</button>
+          <button class="choice-btn final-btn" id="finalHome">🏠 Ana Sayfa</button>
+        </div>
+      </div>
+    `;
+    
+    elChoices.appendChild(finalContainer);
+    
+    // Seçim özetini doldur
+    fillDecisionsSummary(state);
+    
+    // Parametre sonuçlarını göster
+    fillIndicatorsSummary(state);
+    
+    // Ekolojik denge mesajını göster
+    fillEcologicalMessage(state, scene);
+    
+    // Kış sonu mesajını göster (seçimlere göre)
+    fillWinterMessage(state, scene);
+    
+    // Buton event'lerini ekle (DOM hazır olduktan sonra)
+    setTimeout(() => {
+      const restartBtn = document.getElementById('finalRestart');
+      const homeBtn = document.getElementById('finalHome');
+      
+      if (restartBtn) {
+        restartBtn.onclick = () => {
+          // Mevcut seslendirmeyi durdur
+          if (window.AudioManager && window.AudioManager.stopNarration) {
+            window.AudioManager.stopNarration();
+          }
+          if (window.AudioManager) window.AudioManager.playSound('click');
+          if (window.GameEngine) {
+            window.GameEngine.restart();
+          }
+        };
+      }
+      
+      if (homeBtn) {
+        homeBtn.onclick = () => {
+          // Mevcut seslendirmeyi durdur
+          if (window.AudioManager && window.AudioManager.stopNarration) {
+            window.AudioManager.stopNarration();
+          }
+          if (window.AudioManager) window.AudioManager.playSound('click');
+          window.location.href = "index.html";
+        };
+      }
+    }, 100);
+  }
+  
+  // Seçim özetini doldur
+  function fillDecisionsSummary(state) {
+    const decisionsEl = document.getElementById('finalDecisions');
+    if (!decisionsEl || !window.DecisionHistory) return;
+    
+    const history = window.DecisionHistory.getHistory();
+    if (!history || history.length === 0) {
+      decisionsEl.innerHTML = '<p class="no-data">Henüz karar verilmedi.</p>';
+      return;
+    }
+    
+    // Mevsimlere göre grupla
+    const bySeason = {};
+    history.forEach(decision => {
+      const season = decision.season || 'Bilinmeyen';
+      if (!bySeason[season]) bySeason[season] = [];
+      bySeason[season].push(decision);
+    });
+    
+    let html = '';
+    const seasonOrder = ['İlkbahar', 'Yaz', 'Sonbahar', 'Kış'];
+    
+    seasonOrder.forEach(season => {
+      if (bySeason[season] && bySeason[season].length > 0) {
+        html += `<div class="season-decisions">
+          <h4>${season}</h4>
+          <ul>`;
+        bySeason[season].forEach(decision => {
+          const choiceText = decision.choice && decision.choice.label ? decision.choice.label : 'Seçim yapıldı';
+          html += `<li>
+            <span class="decision-choice">${choiceText}</span>
+            <span class="decision-impact">${getImpactSummary(decision)}</span>
+          </li>`;
+        });
+        html += `</ul></div>`;
+      }
+    });
+    
+    decisionsEl.innerHTML = html || '<p class="no-data">Karar verilmedi.</p>';
+  }
+  
+  // Etki özeti oluştur
+  function getImpactSummary(decision) {
+    if (!decision.tags || decision.tags.length === 0) return 'Etki gözlemlendi';
+    
+    // Seçim etiketlerinden etkileri çıkar
+    const impacts = [];
+    const INDICATOR_LABELS = {
+      biyo: "Canlı Çeşitliliği",
+      su: "Su Dengesi",
+      toprak: "Toprak Sağlığı",
+      hava: "Hava/İklim",
+      insan: "İnsan Etkisi"
+    };
+    
+    // DecisionHistory'den tags bilgisini al (eğer varsa)
+    if (decision.tags && window.GameEngine && window.GameEngine.RULES) {
+      const RULES = window.GameEngine.RULES;
+      decision.tags.forEach(tag => {
+        if (RULES[tag]) {
+          RULES[tag].forEach(rule => {
+            const label = INDICATOR_LABELS[rule.indicator] || rule.indicator;
+            const effect = rule.delta < 0 ? 'iyileşti' : 'zorlandı';
+            impacts.push(`${label} ${effect}`);
+          });
+        }
+      });
+    }
+    
+    return impacts.length > 0 ? impacts.join(', ') : 'Etki gözlemlendi';
+  }
+  
+  // Parametre sonuçlarını göster
+  function fillIndicatorsSummary(state) {
+    const indicatorsEl = document.getElementById('finalIndicators');
+    if (!indicatorsEl) return;
+    
+    const indicators = state.indicators;
+    const INDICATOR_LABELS = window.GameEngine.INDICATOR_LABELS;
+    const INDICATOR_KEYS = window.GameEngine.INDICATOR_KEYS;
+    
+    let html = '<div class="indicators-grid">';
+    
+    INDICATOR_KEYS.forEach(key => {
+      if (key === 'insan') return; // İnsan etkisini gösterme
+      const value = indicators[key];
+      const label = INDICATOR_LABELS[key];
+      const levelIndex = LEVELS.indexOf(value);
+      const stars = createStars(value);
+      const percentage = getBarPercentage(value);
+      const color = getLevelColor(value);
+      
+      html += `
+        <div class="final-indicator-item">
+          <div class="indicator-header">
+            <span class="indicator-label">${label}</span>
+            <span class="indicator-level level-${value.toLowerCase().replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ç/g, 'c')}">${value}</span>
+          </div>
+          <div class="indicator-stars">${stars}</div>
+          <div class="indicator-bar-final">
+            <div class="indicator-bar-fill-final" style="width: ${percentage}%; background-color: ${color};"></div>
+          </div>
+        </div>
+      `;
+    });
+    
+    html += '</div>';
+    indicatorsEl.innerHTML = html;
+  }
+  
+  // Ekolojik denge mesajını göster
+  function fillEcologicalMessage(state, scene) {
+    const messageEl = document.getElementById('finalMessage');
+    if (!messageEl) return;
+    
+    const indicators = state.indicators;
+    const INDICATOR_KEYS = window.GameEngine.INDICATOR_KEYS;
+    
+    // Parametrelerin durumunu analiz et
+    const mükemmel = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'Mükemmel').length;
+    const iyi = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'İyi').length;
+    const orta = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'Orta').length;
+    const zayıf = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'Zayıf').length;
+    const kritik = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'Kritik').length;
+    
+    let message = '';
+    
+    if (kritik > 0 || zayıf >= 2) {
+      message = `
+        <div class="message-content warning">
+          <p><strong>Ekolojik denge hassas durumda.</strong></p>
+          <p>Doğadaki her canlı birbirine bağlıdır. Su, toprak, hava ve canlı çeşitliliği birbirini etkiler. 
+          Küçük değişiklikler bile büyük etkilere yol açabilir.</p>
+          <p>Koruma önlemleri almak, doğal kaynakları bilinçli kullanmak ve gelecek nesilleri düşünmek çok önemlidir.</p>
+        </div>
+      `;
+    } else if (mükemmel >= 3 || (mükemmel + iyi) >= 4) {
+      message = `
+        <div class="message-content success">
+          <p><strong>Ekolojik denge korunuyor! 🌿</strong></p>
+          <p>Doğa, tüm canlıların bir arada yaşadığı bir sistemdir. Her kararımız bu sistemi etkiler. 
+          Bilinçli seçimler yaparak doğayı koruyabiliriz.</p>
+          <p>Su döngüsü, toprak sağlığı, hava kalitesi ve canlı çeşitliliği birbirine bağlıdır. 
+          Birini korumak, diğerlerini de korumak anlamına gelir.</p>
+        </div>
+      `;
+    } else {
+      message = `
+        <div class="message-content info">
+          <p><strong>Ekolojik denge her zaman önemlidir.</strong></p>
+          <p>Doğadaki her şey birbiriyle bağlantılıdır. Bir ağacın korunması, su döngüsünü etkiler. 
+          Su döngüsü, toprak sağlığını etkiler. Toprak sağlığı, canlı çeşitliliğini etkiler.</p>
+          <p>Küçük kararlarımız bile büyük etkilere sahip olabilir. 
+          Bilinçli seçimler yaparak doğayı koruyabilir ve gelecek nesillere güzel bir dünya bırakabiliriz.</p>
+        </div>
+      `;
+    }
+    
+    messageEl.innerHTML = message;
+  }
+  
+  // Kış sonu mesajını göster (seçimlere göre dinamik)
+  function fillWinterMessage(state, scene) {
+    const messageEl = document.getElementById('finalWinterMessage');
+    if (!messageEl) return;
+    
+    const indicators = state.indicators;
+    const INDICATOR_KEYS = window.GameEngine.INDICATOR_KEYS;
+    const history = window.DecisionHistory ? window.DecisionHistory.getHistory() : [];
+    
+    // Parametrelerin durumunu analiz et
+    const mükemmel = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'Mükemmel').length;
+    const iyi = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'İyi').length;
+    const orta = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'Orta').length;
+    const zayıf = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'Zayıf').length;
+    const kritik = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'Kritik').length;
+    
+    // Koruma önlemleri sayısı
+    const korumaSayisi = state.flags.filter(f => f === 'koruma_onlemi').length;
+    const konforSayisi = state.flags.filter(f => f === 'konfor_artti').length;
+    const kontrolSayisi = state.flags.filter(f => f === 'kontrol_var').length;
+    
+    // Seçim analizi
+    const korumaSecimleri = history.filter(d => d.tags && d.tags.includes('koruma_onlemi')).length;
+    const konforSecimleri = history.filter(d => d.tags && d.tags.includes('konfor_artti')).length;
+    
+    let message = '';
+    let messageClass = 'info';
+    
+    // Senaryo 1: Mükemmel denge
+    if (mükemmel >= 3 && korumaSayisi >= 5) {
+      messageClass = 'success';
+      message = `
+        <div class="winter-message-content ${messageClass}">
+          <p><strong>Harika bir yıl geçirdin! 🌟</strong></p>
+          <p>Bir yıl boyunca verdiğin kararlar doğayı korudu. ${korumaSecimleri} kez koruma önlemi aldın, 
+          bu yüzden doğa sağlıklı kaldı. Su temiz, toprak verimli, hava temiz ve canlılar mutlu.</p>
+          <p>Küçük kararların büyük etkileri oldu. Doğayı korumak için gösterdiğin çaba, 
+          gelecek nesillere güzel bir dünya bırakmanı sağladı.</p>
+          <p><em>Unutma: Her kararımız doğayı etkiler. Bilinçli seçimler yaparak dünyayı koruyabiliriz.</em></p>
+        </div>
+      `;
+    }
+    // Senaryo 2: İyi denge
+    else if ((mükemmel + iyi) >= 3 && kritik === 0) {
+      messageClass = 'success';
+      message = `
+        <div class="winter-message-content ${messageClass}">
+          <p><strong>İyi bir yıl geçirdin! 🌿</strong></p>
+          <p>Verdiğin kararların çoğu doğaya faydalı oldu. ${korumaSecimleri > 0 ? korumaSecimleri + ' kez koruma önlemi aldın ve' : ''} 
+          doğa genel olarak sağlıklı kaldı. Bazı alanlarda daha dikkatli olabilirsin, ama genel durum iyi.</p>
+          <p>Doğadaki her şey birbirine bağlı. Su, toprak, hava ve canlılar birbirini etkiler. 
+          Koruma önlemleri almak, bu dengeyi korumaya yardımcı olur.</p>
+          <p><em>Gelecek yıl daha da iyi kararlar verebilirsin. Her seçim önemlidir!</em></p>
+        </div>
+      `;
+    }
+    // Senaryo 3: Orta dengesizlik
+    else if (zayıf >= 2 || kritik >= 1) {
+      messageClass = 'warning';
+      message = `
+        <div class="winter-message-content ${messageClass}">
+          <p><strong>Yıl boyunca bazı zorluklar yaşandı. ⚠️</strong></p>
+          <p>Verdiğin bazı kararlar doğayı zorladı. ${konforSecimleri > 0 ? konforSecimleri + ' kez konfor için seçim yaptın, bu da doğayı etkiledi.' : 'Bazı seçimler doğayı zorladı.'} 
+          ${korumaSecimleri > 0 ? 'Ama ' + korumaSecimleri + ' kez de koruma önlemi aldın, bu iyi bir şey!' : 'Daha fazla koruma önlemi alabilirdin.'}</p>
+          <p>Doğa bazen sessizce değişir. Küçük etkiler birikir ve büyük sorunlara yol açabilir. 
+          Ama her zaman düzeltme şansımız var. Koruma önlemleri alarak doğayı iyileştirebiliriz.</p>
+          <p><em>Öğrendiklerinle gelecek yıl daha iyi kararlar verebilirsin. Her karar bir fırsattır!</em></p>
+        </div>
+      `;
+    }
+    // Senaryo 4: Ciddi dengesizlik
+    else if (kritik >= 2 || zayıf >= 3) {
+      messageClass = 'warning';
+      message = `
+        <div class="winter-message-content ${messageClass}">
+          <p><strong>Doğa zor bir yıl geçirdi. 🌍</strong></p>
+          <p>Verdiğin kararların birçoğu doğayı zorladı. ${konforSecimleri > 0 ? konforSecimleri + ' kez konfor için seçim yaptın.' : 'Bazı seçimler doğayı zorladı.'} 
+          ${korumaSecimleri > 0 ? 'Ama ' + korumaSecimleri + ' kez koruma önlemi aldın, bu umut verici!' : 'Daha fazla koruma önlemi alman gerekiyordu.'}</p>
+          <p>Doğadaki her şey birbirine bağlıdır. Bir sistem zorlanınca, diğerleri de etkilenir. 
+          Su azalınca toprak kurur, toprak kuruyunca canlılar zorlanır. Ama her zaman umut vardır!</p>
+          <p>Koruma önlemleri alarak, bilinçli seçimler yaparak doğayı iyileştirebiliriz. 
+          Küçük adımlar büyük değişikliklere yol açabilir.</p>
+          <p><em>Gelecek yıl daha dikkatli kararlar vererek doğayı koruyabilirsin. Her karar önemlidir!</em></p>
+        </div>
+      `;
+    }
+    // Senaryo 5: Genel durum
+    else {
+      messageClass = 'info';
+      message = `
+        <div class="winter-message-content ${messageClass}">
+          <p><strong>Bir yıl daha geçti. 🍂</strong></p>
+          <p>Verdiğin kararlar doğayı etkiledi. ${korumaSecimleri > 0 ? korumaSecimleri + ' kez koruma önlemi aldın, bu güzel!' : 'Bazı seçimler yaptın.'} 
+          ${konforSecimleri > 0 ? konforSecimleri + ' kez de konfor için seçim yaptın.' : ''}</p>
+          <p>Doğadaki her karar bir etki yaratır. Bazen bu etkiler hemen görülür, bazen zamanla ortaya çıkar. 
+          Önemli olan, her seçimde doğayı düşünmek ve bilinçli kararlar vermek.</p>
+          <p>Su, toprak, hava ve canlılar birbirine bağlıdır. Birini korumak, diğerlerini de korumak anlamına gelir.</p>
+          <p><em>Her yeni yıl yeni bir fırsattır. Öğrendiklerinle daha iyi kararlar verebilirsin!</em></p>
+        </div>
+      `;
+    }
+    
+    messageEl.innerHTML = message;
   }
 
   // Global API

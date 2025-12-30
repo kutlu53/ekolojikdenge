@@ -49,40 +49,48 @@
     const feedback = document.createElement('div');
     feedback.className = 'choice-feedback';
     
-    const immediateEffects = effects.filter(e => e.delay === 0);
-    const delayedEffects = effects.filter(e => e.delay > 0);
+    // Tüm etkileri birleştir (hemen ve gelecek etkileri ayrım yapmadan)
+    const allEffects = [...effects];
+    
+    // Etkileri grupla (aynı yönde olanları birleştir)
+    const groupedEffects = {};
+    allEffects.forEach(effect => {
+      const key = `${effect.indicator}_${effect.delta < 0 ? 'up' : 'down'}`;
+      if (!groupedEffects[key]) {
+        groupedEffects[key] = {
+          indicator: effect.indicator,
+          delta: effect.delta,
+          count: 1
+        };
+      } else {
+        groupedEffects[key].count++;
+      }
+    });
 
-    let feedbackHTML = '<div class="feedback-header">✨ Seçiminizin Etkileri</div>';
+    let feedbackHTML = '<div class="feedback-header">✨ Etkiler</div>';
     feedbackHTML += '<div class="feedback-content">';
     
     // Seslendirme için kısa metin oluştur
     let narrationText = '';
+    const effectItems = [];
     
-    if (immediateEffects.length > 0) {
-      feedbackHTML += '<div class="feedback-section">';
-      feedbackHTML += '<div class="feedback-subtitle">Hemen:</div>';
-      immediateEffects.forEach((effect, index) => {
-        const icon = effect.delta < 0 ? '✅' : '⚠️';
-        const text = `${effect.indicator} ${effect.delta < 0 ? 'iyileşiyor' : 'zorlanıyor'}`;
-        feedbackHTML += `<div class="feedback-item ${effect.delta < 0 ? 'positive' : 'negative'}">${icon} ${text}</div>`;
-        if (narrationText) narrationText += ', ';
-        narrationText += `${effect.indicator} ${effect.delta < 0 ? 'iyileşiyor' : 'zorlanıyor'}`;
+    Object.values(groupedEffects).forEach((effect, index) => {
+      const icon = effect.delta < 0 ? '✅' : '⚠️';
+      const text = `${effect.indicator} ${effect.delta < 0 ? 'iyileşiyor' : 'zorlanıyor'}`;
+      effectItems.push({
+        icon,
+        text,
+        isPositive: effect.delta < 0
       });
-      feedbackHTML += '</div>';
-    }
+      
+      if (narrationText) narrationText += ', ';
+      narrationText += text;
+    });
 
-    if (delayedEffects.length > 0) {
-      feedbackHTML += '<div class="feedback-section">';
-      feedbackHTML += '<div class="feedback-subtitle">Gelecekte:</div>';
-      delayedEffects.forEach((effect, index) => {
-        const icon = effect.delta < 0 ? '🌱' : '⏳';
-        const text = `${effect.indicator} ${effect.delta < 0 ? 'iyileşecek' : 'zorlanacak'} (${effect.delay} adım sonra)`;
-        feedbackHTML += `<div class="feedback-item ${effect.delta < 0 ? 'positive' : 'negative'}">${icon} ${text}</div>`;
-        if (narrationText) narrationText += ', ';
-        narrationText += `${effect.indicator} ${effect.delta < 0 ? 'iyileşecek' : 'zorlanacak'}`;
-      });
-      feedbackHTML += '</div>';
-    }
+    // Tüm etkileri tek bir listede göster
+    effectItems.forEach((item, index) => {
+      feedbackHTML += `<div class="feedback-item ${item.isPositive ? 'positive' : 'negative'}">${item.icon} ${item.text}</div>`;
+    });
 
     feedbackHTML += '</div>';
     feedback.innerHTML = feedbackHTML;
@@ -94,28 +102,52 @@
       feedback.classList.add('show');
     }, 100);
 
-    // Dönüt metnini seslendir
-    if (window.AudioManager && window.AudioManager.playNarration) {
+    // Dönüt metnini seslendir (daha hızlı)
+    let narrationComplete = false;
+    if (window.AudioManager && window.AudioManager.playNarration && narrationText) {
       setTimeout(() => {
-        window.AudioManager.playNarration(null, narrationText);
-      }, 300);
+        window.AudioManager.playNarration(null, narrationText, { 
+          rate: 1.3, // Daha hızlı okuma
+          isFeedback: true // Mini dönüt olduğunu belirt (ses kesilmesin)
+        });
+        
+        // Seslendirme bittiğinde işaretle
+        if (window.speechSynthesis) {
+          const checkComplete = setInterval(() => {
+            if (!window.speechSynthesis.speaking) {
+              narrationComplete = true;
+              clearInterval(checkComplete);
+            }
+          }, 100);
+        }
+      }, 200);
     }
 
-    // Otomatik kapanma
+    // Seslendirme süresini hesapla (metin uzunluğuna göre)
+    const estimatedDuration = narrationText ? (narrationText.length * 50) / 1.3 : 2000; // 1.3x hız için süre hesaplama
+    const displayDuration = Math.max(estimatedDuration + 300, 2500); // Minimum 2.5 saniye
+
+    // Otomatik kapanma (seslendirme bitene kadar bekle)
     setTimeout(() => {
       feedback.classList.remove('show');
       setTimeout(() => {
         if (feedback.parentNode) {
           feedback.remove();
         }
+        // Dönüt bittiğinde callback çağır
+        if (window.ChoiceFeedback && window.ChoiceFeedback.onComplete) {
+          window.ChoiceFeedback.onComplete();
+          window.ChoiceFeedback.onComplete = null; // Callback'i temizle
+        }
       }, 500);
-    }, 4000);
+    }, displayDuration);
   }
 
   // Global API
   window.ChoiceFeedback = {
     analyze: analyzeChoiceEffects,
-    show: showFeedback
+    show: showFeedback,
+    onComplete: null // Callback fonksiyonu
   };
 
 })();

@@ -15,6 +15,7 @@
         id: choice.id,
         label: choice.label
       },
+      tags: choice.tags || [], // Tags bilgisini sakla
       indicators: { ...state.indicators },
       timestamp: new Date().toISOString()
     };
