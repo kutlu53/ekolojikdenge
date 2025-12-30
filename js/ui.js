@@ -257,9 +257,9 @@
             }
             
             // Karar geçmişine ekle
-            if (window.DecisionHistory) {
-              const state = window.GameEngine.getState();
-              window.DecisionHistory.add(scene, choice, state);
+            if (window.DecisionHistory && window.DecisionHistory.add) {
+              const currentState = window.GameEngine.getState();
+              window.DecisionHistory.add(scene, choice, currentState);
             }
             
             // Oyun motoruna seçimi ilet (dönüt gösterildikten sonra)
@@ -314,4 +314,3 @@
   }
 
 })();
-
