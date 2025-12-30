@@ -52,19 +52,19 @@ body:not([class*="season-"])::before {
 
 /* Mevsim arka planları */
 body.season-ilkbahar {
-    background-image: url('ekolojikdenge/resim/ilkbahar.pngg');
+    background-image: url('../resim/ilkbahar.pngg');
 }
 
 body.season-yaz {
-    background-image: url('/resim/yaz.png');
+    background-image: url('../resim/yaz.png');
 }
 
 body.season-sonbahar {
-    background-image: url('/resim/sonbahar.png');
+    background-image: url('../resim/sonbahar.png');
 }
 
 body.season-kış {
-    background-image: url('/resim/kış.png');
+    background-image: url('../resim/kış.png');
 }
 
 
