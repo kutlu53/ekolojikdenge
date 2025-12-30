@@ -252,8 +252,10 @@ p {
     font-weight: bold;
     color: #2e8b57;
     margin-bottom: 8px;
-    font-size: 0.95em;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    font-size: 1.1em;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9), 0 0 10px rgba(46, 139, 87, 0.3);
+    letter-spacing: 1px;
+    padding: 4px 0;
 }
 .progress-bar {
     width: 100%;
@@ -267,9 +269,9 @@ p {
 }
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #4caf50 0%, #8bc34a 50%, #cddc39 100%);
+    background: linear-gradient(90deg, #4caf50 0%, #8bc34a 50%, #66bb6a 100%);
     border-radius: 12px;
-    transition: width 0.5s ease;
+    transition: width 0.5s ease, background 0.6s ease, box-shadow 0.6s ease;
     width: 0%;
     position: relative;
     overflow: hidden;
@@ -308,21 +310,26 @@ p {
     flex: 1;
     text-align: center;
     transition: color 0.3s ease, font-weight 0.3s ease;
-    padding: 4px 6px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(3px);
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(5px);
     min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 0.95em;
+    font-weight: 600;
 }
 .season-marker.active {
     color: #2e8b57;
     font-weight: bold;
-    text-shadow: 0 0 10px rgba(46, 139, 87, 0.5);
+    font-size: 1.1em;
+    text-shadow: 0 0 15px rgba(46, 139, 87, 0.7), 1px 1px 3px rgba(0, 0, 0, 0.3);
     animation: markerGlow 2s ease-in-out infinite;
-    transform: scale(1.1);
+    transform: scale(1.15);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 10px rgba(46, 139, 87, 0.4);
 }
 
 @keyframes markerGlow {
@@ -344,13 +351,28 @@ p {
     max-width: 600px;
 }
 #uiRole {
-    font-size: 1.5em;
+    font-size: 2.5em;
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     text-align: center;
-    text-shadow: 0 0 10px rgba(46, 139, 87, 0.5);
+    text-shadow: 0 0 15px rgba(46, 139, 87, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.3);
     animation: rolePulse 2s ease-in-out infinite;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+#roleIcon {
+    font-size: 1.2em;
+    display: inline-block;
+    filter: drop-shadow(0 0 10px rgba(46, 139, 87, 0.6));
+}
+
+#roleText {
+    font-size: 1em;
+    display: inline-block;
 }
 
 @keyframes rolePulse {
@@ -364,10 +386,30 @@ p {
     }
 }
 #uiSeason {
-    font-size: 1.1em;
+    font-size: 1.8em;
     color: #2e8b57;
-    margin-bottom: 18px;
+    margin-bottom: 24px;
     text-align: center;
+    font-weight: bold;
+    text-shadow: 0 0 12px rgba(46, 139, 87, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: 2px;
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(46, 139, 87, 0.3), 0 0 20px rgba(46, 139, 87, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(46, 139, 87, 0.3);
+    display: inline-block;
+    animation: seasonGlow 3s ease-in-out infinite;
+}
+
+@keyframes seasonGlow {
+    0%, 100% {
+        box-shadow: 0 4px 15px rgba(46, 139, 87, 0.3), 0 0 20px rgba(46, 139, 87, 0.2);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(46, 139, 87, 0.5), 0 0 30px rgba(46, 139, 87, 0.4);
+    }
 }
 #sceneText {
     max-width: 100%;
@@ -446,60 +488,36 @@ p {
 
 .restart-btn {
     position: fixed;
+    bottom: 20px;
     right: 16px;
-    bottom: 16px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     background: #ffb347;
     color: #222;
-    font-weight: bold;
     border: none;
-    border-radius: 12px;
-    padding: 16px 28px;
-    font-size: 1.1em;
+    font-size: 1.5em;
     cursor: pointer;
-    box-shadow: 0 2px 8px #0002;
-    z-index: 10;
-}
-.restart-btn:active {
-    background: #ff9800;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
-@media (max-width: 600px) {
-    .panel {
-        gap: 8px;
-        padding: 12px 0 8px 0;
-    }
-    .panel-item {
-        min-width: 90px;
-        padding: 6px 8px;
-    }
-    .panel-label {
-        font-size: 0.85em;
-    }
-    .panel-value {
-        font-size: 0.9em;
-        padding: 2px 8px;
-    }
-    .progress-container {
-        padding: 0 12px;
-    }
-    .progress-seasons {
-        font-size: 0.75em;
-    }
-    .choice-btn {
-        font-size: 1.1em;
-        padding: 16px 0;
-    }
-    .restart-btn {
-        padding: 12px 16px;
-        font-size: 1em;
-        right: 12px;
-        bottom: 12px;
-    }
-    #sceneText {
-        font-size: 1.05em;
-        padding: 14px 16px;
-    }
+.restart-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
+
+.restart-btn:active {
+    background: #ff9800;
+    transform: scale(0.95);
+}
+
+/* Mobil düzenlemeleri aşağıdaki "Mobile İyileştirmeler" bölümünde */
 
 /* Başarı Rozetleri */
 .achievement-notification {
@@ -729,6 +747,9 @@ p {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     z-index: 100;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .audio-toggle:hover {
@@ -794,24 +815,114 @@ p {
 
 /* Mobile İyileştirmeler */
 @media (max-width: 600px) {
+    /* Panel mobilde taşmasın */
+    .panel {
+        padding: 8px 4px 6px 4px;
+        gap: 4px;
+    }
+    
+    .panel-item {
+        min-width: 80px;
+        padding: 4px 6px;
+        font-size: 0.8em;
+    }
+    
+    .panel-label {
+        font-size: 0.75em;
+    }
+    
+    .panel-value {
+        font-size: 0.8em;
+        padding: 2px 6px;
+    }
+    
+    .stars-container {
+        font-size: 0.7em;
+    }
+    
+    /* Progress container mobilde */
+    .progress-container {
+        margin: 10px auto;
+        padding: 8px 10px;
+    }
+    
+    .progress-label {
+        font-size: 0.9em;
+        margin-bottom: 6px;
+    }
+    
+    .progress-bar {
+        height: 20px;
+    }
+    
+    /* Game main mobilde */
+    .game-main {
+        margin-top: 20px;
+        padding: 0 10px;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    #sceneText {
+        padding: 16px 12px;
+        font-size: 1em;
+        margin-bottom: 20px;
+    }
+    
+    #choices {
+        width: 100%;
+        gap: 12px;
+        margin-bottom: 30px;
+    }
+
+    .choice-btn {
+        width: 100%;
+        max-width: 100%;
+        padding: 14px 0;
+        font-size: 1em;
+    }
+    
+    /* Achievement notification mobilde */
     .achievement-notification {
-        top: 10px;
+        top: 60px;
         right: 10px;
         left: 10px;
         max-width: none;
         transform: translateY(-100px);
+        padding: 12px 16px;
+        font-size: 0.9em;
     }
     
     .achievement-notification.show {
         transform: translateY(0);
     }
     
+    /* Choice feedback mobilde */
+    .choice-feedback {
+        top: 60px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        min-width: auto;
+        padding: 16px;
+        transform: translateX(0);
+        opacity: 0;
+    }
+    
+    .choice-feedback.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    
+    /* History content mobilde */
     .history-content {
         width: 95%;
         padding: 16px;
         max-height: 90vh;
+        margin: 10px auto;
     }
     
+    /* Butonlar mobilde üstte yan yana */
     .audio-toggle,
     .history-btn,
     .achievements-btn {
@@ -835,10 +946,32 @@ p {
     }
     
     .restart-btn {
-        bottom: 10px;
+        bottom: 60px;
         right: 10px;
-        padding: 12px 20px;
-        font-size: 0.9em;
+        width: 45px;
+        height: 45px;
+        font-size: 1.2em;
+        padding: 0;
+    }
+    
+    /* Final screen mobilde */
+    .final-screen {
+        padding: 20px 10px;
+    }
+    
+    .final-header h1 {
+        font-size: 2em;
+    }
+    
+    .final-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .final-section {
+        min-width: 100%;
+        max-width: 100%;
+        padding: 20px;
     }
 }
 
@@ -1216,26 +1349,27 @@ p {
 /* Seçim Dönüt Sistemi */
 .choice-feedback {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
+    top: 20px;
+    right: 20px;
+    transform: translateX(400px) scale(0.9);
     background: rgba(255, 255, 255, 0.98);
     border-radius: 20px;
-    padding: 25px 30px;
+    padding: 20px 25px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), 0 0 60px rgba(46, 139, 87, 0.3);
     z-index: 3000;
-    max-width: 500px;
-    width: 90%;
+    max-width: 400px;
+    width: auto;
+    min-width: 300px;
     opacity: 0;
     pointer-events: none;
-    transition: all 0.5s ease;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(46, 139, 87, 0.3);
 }
 
 .choice-feedback.show {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translateX(0) scale(1);
     pointer-events: auto;
 }
 
@@ -1261,7 +1395,7 @@ p {
 }
 
 .feedback-subtitle {
-    font-size: 1em;
+        font-size: 1em;
     font-weight: bold;
     color: #666;
     margin-bottom: 5px;
@@ -1399,5 +1533,422 @@ p {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Final Ekranı Stilleri */
+.final-screen {
+    width: 100%;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0;
+    animation: fadeInContent 0.8s ease-out;
+}
+
+.final-content {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 25px;
+    padding: 40px 30px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(46, 139, 87, 0.2);
+}
+
+.final-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid rgba(46, 139, 87, 0.3);
+}
+
+.final-header h2 {
+    font-size: 2.5em;
+    color: #2e8b57;
+    margin: 0 0 10px 0;
+    text-shadow: 0 2px 10px rgba(46, 139, 87, 0.2);
+}
+
+.final-subtitle {
+    font-size: 1.2em;
+    color: #666;
+    margin: 0;
+    font-style: italic;
+}
+
+.final-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.final-section {
+    background: rgba(248, 250, 252, 0.8);
+    border-radius: 15px;
+    padding: 25px;
+    border-left: 4px solid #4caf50;
+}
+
+.final-section h3 {
+    font-size: 1.5em;
+    color: #2e8b57;
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-description {
+    font-size: 1.05em;
+    color: #555;
+    line-height: 1.6;
+    margin: 0 0 20px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    border-left: 3px solid #4caf50;
+}
+
+.final-section.final-message {
+    background: linear-gradient(135deg, rgba(232, 245, 233, 0.9) 0%, rgba(200, 230, 201, 0.9) 100%);
+    border-left-color: #66bb6a;
+}
+
+/* Seçim Özeti */
+.decisions-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.decisions-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.decisions-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+.decisions-list::-webkit-scrollbar-thumb {
+    background: #4caf50;
+    border-radius: 10px;
+}
+
+.season-decisions {
+    margin-bottom: 20px;
+}
+
+.season-decisions h4 {
+    font-size: 1.2em;
+    color: #2e8b57;
+    margin: 0 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(46, 139, 87, 0.2);
+}
+
+.season-decisions ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.season-decisions li {
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 10px;
+    border-left: 3px solid #4caf50;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.season-decisions li:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(46, 139, 87, 0.15);
+}
+
+.decision-choice {
+    font-weight: bold;
+    color: #2e8b57;
+    font-size: 1.05em;
+}
+
+.decision-impact {
+    font-size: 0.9em;
+    color: #666;
+    font-style: italic;
+}
+
+.no-data {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 20px;
+}
+
+/* Parametre Sonuçları */
+.final-indicators {
+    margin-top: 15px;
+}
+
+.indicators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.final-indicator-item {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    border: 2px solid rgba(46, 139, 87, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.final-indicator-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(46, 139, 87, 0.2);
+}
+
+.indicator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.indicator-label {
+    font-weight: bold;
+    color: #2e8b57;
+    font-size: 1.05em;
+}
+
+.indicator-level {
+    font-size: 0.9em;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+}
+
+.indicator-stars {
+    font-size: 1.2em;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.indicator-bar-final {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.indicator-bar-fill-final {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.8s ease;
+}
+
+/* Ekolojik Denge Mesajı */
+.ecological-message {
+    margin-top: 15px;
+}
+
+.message-content {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    line-height: 1.8;
+    font-size: 1.05em;
+}
+
+.message-content.success {
+    border-left: 4px solid #4caf50;
+    background: linear-gradient(135deg, rgba(232, 245, 233, 0.5) 0%, rgba(200, 230, 201, 0.5) 100%);
+}
+
+.message-content.warning {
+    border-left: 4px solid #ff9800;
+    background: linear-gradient(135deg, rgba(255, 243, 224, 0.5) 0%, rgba(255, 224, 178, 0.5) 100%);
+}
+
+.message-content.info {
+    border-left: 4px solid #2196f3;
+    background: linear-gradient(135deg, rgba(227, 242, 253, 0.5) 0%, rgba(187, 222, 251, 0.5) 100%);
+}
+
+.message-content p {
+    margin: 12px 0;
+    color: #333;
+}
+
+.message-content p:first-child {
+    margin-top: 0;
+}
+
+.message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.message-content strong {
+    color: #2e8b57;
+    font-size: 1.1em;
+}
+
+/* Final Butonlar */
+.final-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid rgba(46, 139, 87, 0.2);
+}
+
+.final-btn {
+    min-width: 180px;
+    padding: 15px 30px;
+    font-size: 1.1em;
+    background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.final-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    background: linear-gradient(135deg, #66bb6a 0%, #81c784 100%);
+}
+
+.final-btn:active {
+    transform: translateY(0);
+}
+
+/* Tablet Responsive */
+@media (max-width: 768px) and (min-width: 601px) {
+    /* Panel tablette */
+    .panel {
+        gap: 6px;
+        padding: 10px 4px 6px 4px;
+    }
+    
+    .panel-item {
+        min-width: 100px;
+        padding: 6px 8px;
+    }
+    
+    /* Progress container tablette */
+    .progress-container {
+        padding: 10px 12px;
+    }
+    
+    /* Game main tablette */
+    .game-main {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+    
+    /* Final screen tablette */
+    .final-content {
+        padding: 25px 20px;
+        flex-wrap: wrap;
+    }
+    
+    .final-header h2 {
+        font-size: 2em;
+    }
+    
+    .final-subtitle {
+        font-size: 1em;
+    }
+    
+    .final-section {
+        min-width: 100%;
+        max-width: 100%;
+    }
+    
+    .indicators-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .final-actions {
+        flex-direction: column;
+    }
+    
+    .final-btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .decisions-list {
+        max-height: 200px;
+    }
+}
+
+/* Çok küçük ekranlar için ek düzenlemeler */
+@media (max-width: 480px) {
+    .panel-item {
+        min-width: 70px;
+        padding: 4px 5px;
+        font-size: 0.75em;
+    }
+    
+    .panel-label {
+        font-size: 0.7em;
+    }
+    
+    .panel-value {
+        font-size: 0.75em;
+        padding: 2px 5px;
+    }
+    
+    #uiRole {
+        font-size: 1.8em;
+    }
+    
+    #uiSeason {
+        font-size: 1.2em;
+        padding: 5px 12px;
+    }
+    
+    #sceneText {
+        font-size: 0.95em;
+        padding: 12px 10px;
+    }
+    
+    .choice-btn {
+        font-size: 0.95em;
+        padding: 12px 0;
+    }
+    
+    .audio-toggle,
+    .history-btn,
+    .achievements-btn,
+    .restart-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1em;
+    }
+    
+    .history-btn {
+        right: 60px;
+    }
+    
+    .achievements-btn {
+        right: 110px;
+    }
+    
+    .restart-btn {
+        bottom: 60px;
+        right: 10px;
+        padding: 0;
     }
 }
