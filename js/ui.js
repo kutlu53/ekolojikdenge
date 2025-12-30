@@ -187,18 +187,34 @@
     
     // Mevsim arka planını güncelle
     if (scene.season) {
-      // Mevsim adlarını CSS sınıf adlarına çevir
+      // Mevsim adlarını CSS sınıf adlarına çevir (Türkçe karakter güvenli)
       const seasonMap = {
         "İlkbahar": "ilkbahar",
+        "ilkbahar": "ilkbahar",
+        "İLKBAHAR": "ilkbahar",
         "Yaz": "yaz",
+        "yaz": "yaz",
+        "YAZ": "yaz",
         "Sonbahar": "sonbahar",
-        "Kış": "kış"
+        "sonbahar": "sonbahar",
+        "SONBAHAR": "sonbahar",
+        "Kış": "kış",
+        "kış": "kış",
+        "KIŞ": "kış"
       };
-      const seasonClass = `season-${seasonMap[scene.season] || scene.season.toLowerCase()}`;
+      
+      // Mevsim adını normalize et (Türkçe karakterleri dikkate al)
+      const normalizedSeason = scene.season.trim();
+      const seasonKey = seasonMap[normalizedSeason] || normalizedSeason.toLowerCase().replace(/ı/g, 'i').replace(/İ/g, 'i').replace(/ş/g, 's').replace(/Ş/g, 's');
+      const seasonClass = `season-${seasonKey}`;
+      
       const previousSeason = document.body.className.match(/season-(\w+)/);
       
       document.body.className = document.body.className.replace(/season-\w+/g, '');
       document.body.classList.add(seasonClass);
+      
+      // Debug için (geliştirme aşamasında)
+      console.log('Season:', scene.season, '→ Class:', seasonClass, '→ Body classes:', document.body.className);
       
       // Mevsim değiştiyse müziği güncelle
       if (window.AudioManager && (!previousSeason || previousSeason[1] !== seasonMap[scene.season])) {
