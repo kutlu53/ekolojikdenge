@@ -247,9 +247,9 @@
           // Karar geçmişi butonu
           const historyBtn = document.getElementById('historyBtn');
           const historyModal = document.getElementById('historyModal');
-          if (historyBtn && historyModal && window.DecisionHistory) {
+          if (historyBtn && historyModal) {
             historyBtn.onclick = function() {
-              const history = window.DecisionHistory.get();
+              const history = window.DecisionHistory ? window.DecisionHistory.get() : [];
               const list = document.getElementById('historyList');
               if (list) {
                 if (history.length === 0) {
@@ -257,39 +257,47 @@
                 } else {
                   list.innerHTML = history.slice().reverse().map(decision => `
                     <div class="history-item">
-                      <div class="history-season">${decision.season}</div>
-                      <div class="history-text">${decision.sceneText.substring(0, 100)}...</div>
-                      <div class="history-choice">${decision.choice.label}</div>
+                      <div class="history-season">${decision.season || 'Bilinmeyen'}</div>
+                      <div class="history-text">${(decision.sceneText || '').substring(0, 100)}${(decision.sceneText || '').length > 100 ? '...' : ''}</div>
+                      <div class="history-choice">${decision.choice ? decision.choice.label : 'Seçim yapılmadı'}</div>
                     </div>
                   `).join('');
                 }
               }
-              historyModal.classList.add('show');
+              if (historyModal) {
+                historyModal.classList.add('show');
+              }
             };
           }
           
           // Başarı rozetleri butonu
           const achievementsBtn = document.getElementById('achievementsBtn');
           const achievementsModal = document.getElementById('achievementsModal');
-          if (achievementsBtn && achievementsModal && window.AchievementSystem) {
+          if (achievementsBtn && achievementsModal) {
             achievementsBtn.onclick = function() {
-              const achievements = window.AchievementSystem.getAll();
+              const achievements = window.AchievementSystem ? window.AchievementSystem.getAll() : [];
               const list = document.getElementById('achievementsList');
               if (list) {
-                list.innerHTML = achievements.map(ach => `
-                  <div class="history-item" style="${ach.earned ? '' : 'opacity: 0.5;'}">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                      <span style="font-size: 2em;">${ach.icon}</span>
-                      <div style="flex: 1;">
-                        <div style="font-weight: bold; margin-bottom: 4px;">${ach.name}</div>
-                        <div style="font-size: 0.9em; color: #666;">${ach.description}</div>
-                        ${ach.earned ? `<div style="font-size: 0.8em; color: #2e8b57; margin-top: 4px;">✓ Kazanıldı</div>` : '<div style="font-size: 0.8em; color: #999; margin-top: 4px;">Kazanılmadı</div>'}
+                if (achievements.length === 0) {
+                  list.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Henüz başarı rozeti yok.</p>';
+                } else {
+                  list.innerHTML = achievements.map(ach => `
+                    <div class="history-item" style="${ach.earned ? '' : 'opacity: 0.5;'}">
+                      <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 2em;">${ach.icon || '🏆'}</span>
+                        <div style="flex: 1;">
+                          <div style="font-weight: bold; margin-bottom: 4px;">${ach.name || 'Başarı'}</div>
+                          <div style="font-size: 0.9em; color: #666;">${ach.description || ''}</div>
+                          ${ach.earned ? '<div style="font-size: 0.8em; color: #2e8b57; margin-top: 4px;">✓ Kazanıldı</div>' : '<div style="font-size: 0.8em; color: #999; margin-top: 4px;">Kazanılmadı</div>'}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                `).join('');
+                  `).join('');
+                }
               }
-              achievementsModal.classList.add('show');
+              if (achievementsModal) {
+                achievementsModal.classList.add('show');
+              }
             };
           }
         }
