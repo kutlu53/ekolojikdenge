@@ -55,36 +55,32 @@
     let feedbackHTML = '<div class="feedback-header">✨ Seçiminizin Etkileri</div>';
     feedbackHTML += '<div class="feedback-content">';
     
-    // Seslendirme için metin oluştur
-    let narrationText = 'Seçiminizin etkileri: ';
+    // Seslendirme için kısa metin oluştur
+    let narrationText = '';
     
     if (immediateEffects.length > 0) {
       feedbackHTML += '<div class="feedback-section">';
       feedbackHTML += '<div class="feedback-subtitle">Hemen:</div>';
-      narrationText += 'Hemen: ';
       immediateEffects.forEach((effect, index) => {
         const icon = effect.delta < 0 ? '✅' : '⚠️';
         const text = `${effect.indicator} ${effect.delta < 0 ? 'iyileşiyor' : 'zorlanıyor'}`;
         feedbackHTML += `<div class="feedback-item ${effect.delta < 0 ? 'positive' : 'negative'}">${icon} ${text}</div>`;
-        narrationText += text;
-        if (index < immediateEffects.length - 1) narrationText += ', ';
+        if (narrationText) narrationText += ', ';
+        narrationText += `${effect.indicator} ${effect.delta < 0 ? 'iyileşiyor' : 'zorlanıyor'}`;
       });
-      narrationText += '. ';
       feedbackHTML += '</div>';
     }
 
     if (delayedEffects.length > 0) {
       feedbackHTML += '<div class="feedback-section">';
       feedbackHTML += '<div class="feedback-subtitle">Gelecekte:</div>';
-      narrationText += 'Gelecekte: ';
       delayedEffects.forEach((effect, index) => {
         const icon = effect.delta < 0 ? '🌱' : '⏳';
-        const text = `${effect.indicator} ${effect.delta < 0 ? 'iyileşecek' : 'zorlanacak'} ${effect.delay} adım sonra`;
+        const text = `${effect.indicator} ${effect.delta < 0 ? 'iyileşecek' : 'zorlanacak'} (${effect.delay} adım sonra)`;
         feedbackHTML += `<div class="feedback-item ${effect.delta < 0 ? 'positive' : 'negative'}">${icon} ${text}</div>`;
-        narrationText += text;
-        if (index < delayedEffects.length - 1) narrationText += ', ';
+        if (narrationText) narrationText += ', ';
+        narrationText += `${effect.indicator} ${effect.delta < 0 ? 'iyileşecek' : 'zorlanacak'}`;
       });
-      narrationText += '.';
       feedbackHTML += '</div>';
     }
 
