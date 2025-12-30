@@ -6,12 +6,13 @@
     balanced_year: {
       id: 'balanced_year',
       name: 'Dengeli Yıl',
-      description: 'Tüm parametreler dengeli kaldı',
+      description: 'Tüm parametreler mükemmel veya iyi kaldı',
       icon: '⚖️',
       condition: (state) => {
-        const levels = ['biyo', 'su', 'toprak', 'hava'].map(key => 
-          state.indicators[key] === 'Dengeli'
-        );
+        const levels = ['biyo', 'su', 'toprak', 'hava'].map(key => {
+          const level = state.indicators[key];
+          return level === 'Mükemmel' || level === 'İyi';
+        });
         return levels.every(v => v);
       }
     },
@@ -36,11 +37,11 @@
     perfect_balance: {
       id: 'perfect_balance',
       name: 'Mükemmel Denge',
-      description: 'Hiçbir parametre hassas seviyeye gelmedi',
+      description: 'Hiçbir parametre kritik seviyeye gelmedi',
       icon: '✨',
       condition: (state) => {
         const levels = ['biyo', 'su', 'toprak', 'hava'].map(key => 
-          state.indicators[key] !== 'Hassas'
+          state.indicators[key] !== 'Kritik'
         );
         return levels.every(v => v);
       }
