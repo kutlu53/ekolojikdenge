@@ -52,7 +52,7 @@ body:not([class*="season-"])::before {
 
 /* Mevsim arka planları */
 body.season-ilkbahar {
-    background-image: url('../resim/ilkbahar.pngg');
+    background-image: url('../resim/ilkbahar.png');
 }
 
 body.season-yaz {
