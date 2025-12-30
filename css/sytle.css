@@ -52,19 +52,19 @@ body:not([class*="season-"])::before {
 
 /* Mevsim arka planları */
 body.season-ilkbahar {
-    background-image: url('../resim/ilkbahar.png');
+    background-image: url('./resim/ilkbahar.png');
 }
 
 body.season-yaz {
-    background-image: url('../resim/yaz.png');
+    background-image: url('./resim/yaz.png');
 }
 
 body.season-sonbahar {
-    background-image: url('../resim/sonbahar.png');
+    background-image: url('./resim/sonbahar.png');
 }
 
 body.season-kış {
-    background-image: url('../resim/kış.png');
+    background-image: url('./resim/kış.png');
 }
 
 
@@ -553,12 +553,24 @@ p {
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    position: relative;
+    margin: 20px;
+}
+
+.history-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #2e8b57;
+    font-size: 1.5em;
+    text-align: center;
 }
 
 .history-item {
     padding: 12px;
     border-bottom: 1px solid #eee;
     margin-bottom: 8px;
+    background: rgba(246, 246, 246, 0.5);
+    border-radius: 8px;
 }
 
 .history-item:last-child {
@@ -568,13 +580,15 @@ p {
 .history-season {
     font-weight: bold;
     color: #2e8b57;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    font-size: 0.9em;
 }
 
 .history-text {
     font-size: 0.9em;
-    color: #666;
+    color: #555;
     margin-bottom: 8px;
+    line-height: 1.4;
 }
 
 .history-choice {
