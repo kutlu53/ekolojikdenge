@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bir Can'ın Gözünden Dünya</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 25%, #a5d6a7 50%, #81c784 75%, #66bb6a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(76, 175, 80, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(129, 199, 132, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .landing-container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin: 40px 0 60px;
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        .main-title {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #2e8b57;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 20px rgba(46, 139, 87, 0.3), 0 0 30px rgba(46, 139, 87, 0.2);
+            animation: titleGlow 3s ease-in-out infinite;
+            position: relative;
+        }
+        
+        @keyframes titleGlow {
+            0%, 100% {
+                text-shadow: 0 4px 20px rgba(46, 139, 87, 0.3), 0 0 30px rgba(46, 139, 87, 0.2);
+            }
+            50% {
+                text-shadow: 0 4px 30px rgba(46, 139, 87, 0.5), 0 0 50px rgba(46, 139, 87, 0.4);
+            }
+        }
+        
+        .subtitle {
+            font-size: 1.4em;
+            color: #555;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        .characters {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin: 40px 0;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+        
+        .character {
+            text-align: center;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .character:nth-child(2) {
+            animation-delay: 1.5s;
+        }
+        
+        .character-icon {
+            font-size: 6em;
+            display: block;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.2));
+            animation: characterPulse 2s ease-in-out infinite;
+        }
+        
+        .character-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2e8b57;
+            margin-top: 10px;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        @keyframes characterPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .info-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1), 0 0 40px rgba(46, 139, 87, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+        
+        .info-title {
+            font-size: 2em;
+            color: #2e8b57;
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .info-text {
+            font-size: 1.15em;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, rgba(46, 139, 87, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(46, 139, 87, 0.2);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(46, 139, 87, 0.2);
+            border-color: rgba(46, 139, 87, 0.4);
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .feature-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2e8b57;
+            margin-bottom: 10px;
+        }
+        
+        .feature-desc {
+            font-size: 0.95em;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .seasons-preview {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .season-badge {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(46, 139, 87, 0.3);
+        }
+        
+        .season-badge:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(46, 139, 87, 0.3);
+        }
+        
+        .start-button {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            background: linear-gradient(135deg, #2e8b57 0%, #3da069 50%, #4db377 100%);
+            color: white;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(46, 139, 87, 0.4), 0 0 40px rgba(46, 139, 87, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease-out 0.9s both, buttonPulse 2s ease-in-out infinite 2s;
+        }
+        
+        .start-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .start-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(46, 139, 87, 0.5), 0 0 60px rgba(46, 139, 87, 0.3);
+        }
+        
+        .start-button:hover::before {
+            opacity: 1;
+        }
+        
+        .start-button:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+        
+        @keyframes buttonPulse {
+            0%, 100% {
+                box-shadow: 0 8px 25px rgba(46, 139, 87, 0.4), 0 0 40px rgba(46, 139, 87, 0.2);
+            }
+            50% {
+                box-shadow: 0 8px 30px rgba(46, 139, 87, 0.6), 0 0 50px rgba(46, 139, 87, 0.4);
+            }
+        }
+        
+        .sparkle {
+            position: fixed;
+            font-size: 1.5em;
+            pointer-events: none;
+            z-index: 2;
+            animation: sparkleFloat 4s ease-in-out infinite;
+        }
+        
+        @keyframes sparkleFloat {
+            0% {
+                transform: translateY(0) translateX(0) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                transform: translateY(-30px) translateX(20px) scale(1.2) rotate(180deg);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-60px) translateX(40px) scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5em;
+            }
+            
+            .characters {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .character-icon {
+                font-size: 4em;
+            }
+            
+            .info-section {
+                padding: 25px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <!-- Başlık Bölümü -->
+        <div class="title-section">
+            <h1 class="main-title">Bir Can'ın Gözünden Dünya</h1>
+            <p class="subtitle">Doğayı keşfet, kararlar ver, etkilerini gör</p>
+        </div>
+        
+        <!-- Karakterler -->
+        <div class="characters">
+            <div class="character">
+                <span class="character-icon">🐝</span>
+                <div class="character-name">Arı</div>
+            </div>
+            <div class="character">
+                <span class="character-icon">🌳</span>
+                <div class="character-name">Ağaç</div>
+            </div>
+        </div>
+        
+        <!-- Bilgi Bölümü -->
+        <div class="info-section">
+            <h2 class="info-title">
+                <span>✨</span>
+                <span>Macera Hakkında</span>
+                <span>✨</span>
+            </h2>
+            <p class="info-text">
+                Bu interaktif hikâye oyununda, bir arı ve bir ağaç olarak doğanın döngüsünü yaşayacaksınız. 
+                Her mevsimde kararlar verecek, bu kararların doğa üzerindeki etkilerini göreceksiniz.
+            </p>
+            <p class="info-text">
+                <strong>Doğru ya da yanlış seçim yok!</strong> Her kararın etkileri bazen hemen, bazen gecikmeli olarak ortaya çıkar. 
+                Ekolojik dengeyi korumak için dikkatli düşünün.
+            </p>
+            
+            <!-- Özellikler -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🌍</span>
+                    <div class="feature-title">4 Mevsim</div>
+                    <div class="feature-desc">İlkbahar'dan Kış'a kadar tüm mevsimleri deneyimleyin</div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🎯</span>
+                    <div class="feature-title">5 Ekolojik Parametre</div>
+                    <div class="feature-desc">Canlı çeşitliliği, su, toprak, hava ve insan etkisini takip edin</div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🎨</span>
+                    <div class="feature-title">Masalsı Animasyonlar</div>
+                    <div class="feature-desc">Her mevsimde özel görsel efektler ve animasyonlar</div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🏆</span>
+                    <div class="feature-title">Başarı Rozetleri</div>
+                    <div class="feature-desc">Oyun boyunca başarılarınızı toplayın</div>
+                </div>
+            </div>
+            
+            <!-- Mevsimler Önizleme -->
+            <div style="text-align: center; margin-top: 30px;">
+                <h3 style="color: #2e8b57; margin-bottom: 20px; font-size: 1.5em;">Mevsimler</h3>
+                <div class="seasons-preview">
+                    <div class="season-badge">🌸</div>
+                    <div class="season-badge">☀️</div>
+                    <div class="season-badge">🍂</div>
+                    <div class="season-badge">❄️</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Başla Butonu -->
+        <a href="game.html" class="start-button">Maceraya Başla 🚀</a>
+    </div>
+    
+    <!-- Peri Tozları -->
+    <script>
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.textContent = ['✨', '⭐', '💫', '🌟'][Math.floor(Math.random() * 4)];
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.top = Math.random() * 100 + '%';
+            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            sparkle.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            sparkle.style.fontSize = (Math.random() * 10 + 15) + 'px';
+            sparkle.style.opacity = Math.random() * 0.6 + 0.4;
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => {
+                if (sparkle.parentNode) {
+                    sparkle.remove();
+                }
+            }, 5000);
+        }
+        
+        // İlk yüklemede peri tozları oluştur
+        for (let i = 0; i < 15; i++) {
+            setTimeout(() => createSparkle(), i * 500);
+        }
+        
+        // Sürekli yeni peri tozları ekle
+        setInterval(() => {
+            createSparkle();
+        }, 3000);
+    </script>
+</body>
+</html>
