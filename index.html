@@ -90,6 +90,14 @@
         }
         
         .character:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .character:nth-child(3) {
+            animation-delay: 1s;
+        }
+        
+        .character:nth-child(4) {
             animation-delay: 1.5s;
         }
         
@@ -335,8 +343,14 @@
             }
             
             .characters {
-                flex-direction: column;
-                gap: 30px;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: center;
+            }
+            
+            .character {
+                flex: 0 0 calc(50% - 10px);
+                max-width: 150px;
             }
             
             .character-icon {
@@ -368,8 +382,16 @@
                 <div class="character-name">Arı</div>
             </div>
             <div class="character">
+                <span class="character-icon">🐟</span>
+                <div class="character-name">Balık</div>
+            </div>
+            <div class="character">
                 <span class="character-icon">🌳</span>
                 <div class="character-name">Ağaç</div>
+            </div>
+            <div class="character">
+                <span class="character-icon">🦊</span>
+                <div class="character-name">Tilki</div>
             </div>
         </div>
         
@@ -381,8 +403,8 @@
                 <span>✨</span>
             </h2>
             <p class="info-text">
-                Bu interaktif hikâye oyununda, bir arı ve bir ağaç olarak doğanın döngüsünü yaşayacaksınız. 
-                Her mevsimde kararlar verecek, bu kararların doğa üzerindeki etkilerini göreceksiniz.
+                Bu interaktif hikâye oyununda, bir arı, balık, ağaç ve tilki olarak doğanın döngüsünü yaşayacaksınız. 
+                Her mevsimde farklı bir canlının gözünden dünyayı görecek, kararlar verecek ve bu kararların doğa üzerindeki etkilerini göreceksiniz.
             </p>
             <p class="info-text">
                 <strong>Doğru ya da yanlış seçim yok!</strong> Her kararın etkileri bazen hemen, bazen gecikmeli olarak ortaya çıkar. 
