@@ -192,24 +192,47 @@
     }
     
     // Rol, mevsim, metin - her zaman göster
-    // Role icon ve text'i güncelle
+    // Mevsimlere göre otomatik rol ataması
     const roleIcon = document.getElementById("roleIcon");
     const roleText = document.getElementById("roleText");
     
+    // Mevsimlere göre rol belirle
+    let role = scene.role; // Varsayılan olarak scene.role kullan
+    if (scene.season) {
+      const seasonRoleMap = {
+        "İlkbahar": "ari",
+        "Yaz": "balik",
+        "Sonbahar": "agac",
+        "Kış": "tilki"
+      };
+      // Mevsim varsa mevsim rolünü kullan
+      role = seasonRoleMap[scene.season] || role;
+    }
+    
     if (roleIcon && roleText) {
-      if (scene.role === "ari") {
+      // Yazıyı kaldır, sadece ikonu göster (CSS'de font-size büyütüldü)
+      roleText.textContent = "";
+      
+      if (role === "ari") {
         roleIcon.textContent = "🐝";
-        roleText.textContent = "Arı";
-      } else if (scene.role === "agac") {
+      } else if (role === "agac") {
         roleIcon.textContent = "🌳";
-        roleText.textContent = "Ağaç";
+      } else if (role === "balik") {
+        roleIcon.textContent = "🐟";
+      } else if (role === "tilki") {
+        roleIcon.textContent = "🦊";
       } else {
         roleIcon.textContent = "";
-        roleText.textContent = scene.role || "";
       }
     } else {
       // Fallback: Eski yöntem
-      elRole.textContent = scene.role === "ari" ? "Arı 🐝" : (scene.role === "agac" ? "Ağaç 🌳" : scene.role);
+      const roleMap = {
+        "ari": "Arı 🐝",
+        "agac": "Ağaç 🌳",
+        "balik": "Balık 🐟",
+        "tilki": "Tilki 🦊"
+      };
+      elRole.textContent = roleMap[role] || role;
     }
     elSeason.textContent = scene.season || "";
     elSceneText.textContent = scene.text || "";
@@ -310,8 +333,15 @@
     
     // Seçenek butonları veya final butonları
     if (scene.choices && Array.isArray(scene.choices) && scene.choices.length > 0) {
+      // Seçenekleri rastgele karıştır (Fisher-Yates shuffle)
+      const shuffledChoices = [...scene.choices];
+      for (let i = shuffledChoices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledChoices[i], shuffledChoices[j]] = [shuffledChoices[j], shuffledChoices[i]];
+      }
+      
       // Seçenekler varsa sadece seçenekleri göster
-      scene.choices.forEach(choice => {
+      shuffledChoices.forEach(choice => {
         const btn = document.createElement("button");
         btn.className = "choice-btn";
         btn.textContent = choice.label;
@@ -470,8 +500,11 @@
     
     elChoices.appendChild(finalContainer);
     
-    // Seçim özetini doldur
-    fillDecisionsSummary(state);
+    // DOM'a eklendikten sonra seçim özetini doldur
+    setTimeout(() => {
+      // Seçim özetini doldur (direkt görünür)
+      fillDecisionsSummary(state);
+    }, 50);
     
     // Parametre sonuçlarını göster
     fillIndicatorsSummary(state);
@@ -482,10 +515,11 @@
     // Kış sonu mesajını göster (seçimlere göre)
     fillWinterMessage(state, scene);
     
-    // Buton event'lerini ekle (DOM hazır olduktan sonra)
+    // Buton event'lerini ekle (DOM hazır olduktan sonra - daha uzun timeout)
     setTimeout(() => {
       const restartBtn = document.getElementById('finalRestart');
       const homeBtn = document.getElementById('finalHome');
+      
       
       if (restartBtn) {
         restartBtn.onclick = () => {
@@ -510,7 +544,7 @@
           window.location.href = "index.html";
         };
       }
-    }, 100);
+    }, 200);
   }
   
   // Seçim özetini doldur
@@ -518,7 +552,8 @@
     const decisionsEl = document.getElementById('finalDecisions');
     if (!decisionsEl || !window.DecisionHistory) return;
     
-    const history = window.DecisionHistory.getHistory();
+    // Oyun boyunca yapılan tüm seçimleri al
+    const history = window.DecisionHistory.get ? window.DecisionHistory.get() : [];
     if (!history || history.length === 0) {
       decisionsEl.innerHTML = '<p class="no-data">Henüz karar verilmedi.</p>';
       return;
@@ -542,9 +577,11 @@
           <ul>`;
         bySeason[season].forEach(decision => {
           const choiceText = decision.choice && decision.choice.label ? decision.choice.label : 'Seçim yapıldı';
-          html += `<li>
-            <span class="decision-choice">${choiceText}</span>
-            <span class="decision-impact">${getImpactSummary(decision)}</span>
+          const sceneText = decision.sceneText ? decision.sceneText.split('\n')[0] : ''; // İlk satırı al (soru)
+          html += `<li class="decision-item">
+            <div class="decision-question">${sceneText || 'Soru'}</div>
+            <div class="decision-choice">${choiceText}</div>
+            <div class="decision-impact">${getImpactSummary(decision)}</div>
           </li>`;
         });
         html += `</ul></div>`;
@@ -554,9 +591,11 @@
     decisionsEl.innerHTML = html || '<p class="no-data">Karar verilmedi.</p>';
   }
   
-  // Etki özeti oluştur
+  // Etki özeti oluştur - detaylı versiyon (her seçimin parametreleri nasıl etkilediğini gösterir)
   function getImpactSummary(decision) {
-    if (!decision.tags || decision.tags.length === 0) return 'Etki gözlemlendi';
+    if (!decision.tags || decision.tags.length === 0) {
+      return '<div class="impact-detail"><span class="no-impact">Etki gözlemlenmedi</span></div>';
+    }
     
     // Seçim etiketlerinden etkileri çıkar
     const impacts = [];
@@ -571,18 +610,96 @@
     // DecisionHistory'den tags bilgisini al (eğer varsa)
     if (decision.tags && window.GameEngine && window.GameEngine.RULES) {
       const RULES = window.GameEngine.RULES;
+      const impactGroups = {}; // Parametreye göre grupla
+      
       decision.tags.forEach(tag => {
         if (RULES[tag]) {
           RULES[tag].forEach(rule => {
-            const label = INDICATOR_LABELS[rule.indicator] || rule.indicator;
-            const effect = rule.delta < 0 ? 'iyileşti' : 'zorlandı';
-            impacts.push(`${label} ${effect}`);
+            const indicatorKey = rule.indicator;
+            if (!impactGroups[indicatorKey]) {
+              impactGroups[indicatorKey] = {
+                label: INDICATOR_LABELS[indicatorKey] || indicatorKey,
+                effects: [],
+                totalDelta: 0
+              };
+            }
+            impactGroups[indicatorKey].totalDelta += rule.delta;
+            impactGroups[indicatorKey].effects.push({
+              delta: rule.delta,
+              delay: rule.delay
+            });
           });
+        }
+      });
+      
+      // Her parametre için etkiyi oluştur
+      Object.keys(impactGroups).forEach(key => {
+        const group = impactGroups[key];
+        const absDelta = Math.abs(group.totalDelta);
+        const isPositive = group.totalDelta < 0; // Negatif delta = iyileşme
+        const isNegative = group.totalDelta > 0; // Pozitif delta = zorlanma
+        
+        if (absDelta === 0) return; // Etkisi yoksa göster
+        
+        let effectText = '';
+        let delayInfo = '';
+        
+        // Delay bilgilerini topla (en erken ve en geç)
+        const delays = group.effects.map(e => e.delay).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
+        if (delays.length > 0) {
+          const minDelay = delays[0];
+          const maxDelay = delays[delays.length - 1];
+          if (minDelay === maxDelay) {
+            if (minDelay === 0) {
+              delayInfo = ' (hemen)';
+            } else if (minDelay === 1) {
+              delayInfo = ' (1 adım sonra)';
+            } else {
+              delayInfo = ` (${minDelay} adım sonra)`;
+            }
+          } else {
+            delayInfo = ` (${minDelay}-${maxDelay} adım sonra)`;
+          }
+        }
+        
+        // Seviye değişikliği metni
+        let levelChangeText = '';
+        if (absDelta === 1) {
+          levelChangeText = '1 seviye';
+        } else {
+          levelChangeText = `${absDelta} seviye`;
+        }
+        
+        if (isPositive) {
+          // Negatif delta = iyileşme (seviye azalıyor: Kritik->Zayıf->Orta->İyi->Mükemmel)
+          effectText = `<div class="impact-item positive">
+            <span class="impact-icon">✅</span>
+            <span class="impact-label">${group.label}: <strong>+${levelChangeText}</strong> iyileşti</span>
+            <span class="impact-delay">${delayInfo}</span>
+          </div>`;
+        } else if (isNegative) {
+          // Pozitif delta = zorlanma (seviye artıyor: Mükemmel->İyi->Orta->Zayıf->Kritik)
+          effectText = `<div class="impact-item negative">
+            <span class="impact-icon">⚠️</span>
+            <span class="impact-label">${group.label}: <strong>-${levelChangeText}</strong> zorlandı</span>
+            <span class="impact-delay">${delayInfo}</span>
+          </div>`;
+        }
+        
+        if (effectText) {
+          impacts.push(effectText);
         }
       });
     }
     
-    return impacts.length > 0 ? impacts.join(', ') : 'Etki gözlemlendi';
+    if (impacts.length > 0) {
+      return `<div class="impact-detail">
+        <div class="impact-summary">Parametre Etkileri:</div>
+        <div class="decision-impacts">${impacts.join('')}</div>
+      </div>`;
+    }
+    
+    return '<div class="impact-detail"><span class="no-impact">Etki gözlemlenmedi</span></div>';
   }
   
   // Parametre sonuçlarını göster
@@ -681,7 +798,7 @@
     
     const indicators = state.indicators;
     const INDICATOR_KEYS = window.GameEngine.INDICATOR_KEYS;
-    const history = window.DecisionHistory ? window.DecisionHistory.getHistory() : [];
+    const history = window.DecisionHistory ? window.DecisionHistory.get() : [];
     
     // Parametrelerin durumunu analiz et
     const mükemmel = INDICATOR_KEYS.filter(key => key !== 'insan' && indicators[key] === 'Mükemmel').length;

@@ -6,7 +6,7 @@ window.SCENES = [
       {
         id: "SP_START",
         season: "İlkbahar",
-        role: "ari",
+        role: "balik",
         text:
           "İlkbahar başlıyor. Doğa uyanıyor, hava ısınıyor.\n" +
           "Çiçekler açıyor, arılar ve diğer canlılar hareketleniyor.\n" +
@@ -19,7 +19,7 @@ window.SCENES = [
       {
         id: "SU_START",
         season: "Yaz",
-        role: "ari",
+        role: "balik",
         text:
           "Yaz geldi. Güneş daha parlak, günler uzun.\n" +
           "Doğada hareket artıyor, insanlar ve hayvanlar suya yaklaşıyor.\n" +
@@ -41,14 +41,14 @@ window.SCENES = [
         autoNext: "sonbahar_01"
       },
       // --- Yaz Karar 3 ---
-      { id: "su_05", season: "Yaz", role: "ari", text: "Yaz sıcağında herkes su kullanıyor.\nBazıları bahçeleri serinletmek ve sulamak istiyor.\nBazıları ise dere suyunun da canlılara gerektiğini söylüyor.\nBir düzenleme düşünülüyor.", choices: [ { id: "A", label: "Su kullanımı serbest olsun, herkes ihtiyacına göre kullansın.", next: "su_05a", tags: ["konfor_artti", "su_azaldi"] }, { id: "B", label: "Belirli saatlerde ve ölçülü kullanım olsun.", next: "su_05b", tags: ["koruma_onlemi", "erisimi_zorlasti"] } ], autoNext: null },
-      { id: "su_05a", season: "Yaz", role: "ari", text: "Sulama sesleri daha sık duyuluyor.\nBazı yerler yemyeşil kaldı.\nAma dere kenarında suyun sesi biraz zayıf gibi.", choices: null, autoNext: "su_06" },
+      { id: "su_05", season: "Yaz", role: "balik", text: "Yaz sıcağında herkes su kullanıyor.\nBazıları bahçeleri serinletmek ve sulamak istiyor.\nBazıları ise dere suyunun da canlılara gerektiğini söylüyor.\nBir düzenleme düşünülüyor.", choices: [ { id: "A", label: "Su kullanımı serbest olsun, herkes ihtiyacına göre kullansın.", next: "su_05a", tags: ["konfor_artti", "su_azaldi"] }, { id: "B", label: "Belirli saatlerde ve ölçülü kullanım olsun.", next: "su_05b", tags: ["koruma_onlemi", "erisimi_zorlasti"] } ], autoNext: null },
+      { id: "su_05a", season: "Yaz", role: "balik", text: "Sulama sesleri daha sık duyuluyor.\nBazı yerler yemyeşil kaldı.\nAma dere kenarında suyun sesi biraz zayıf gibi.", choices: null, autoNext: "su_06" },
         // ...existing scenes...
         // KIŞ BAŞLANGIÇ (Çerçeve)
         {
           id: "WI_START",
           season: "Kış",
-          role: "agac",
+          role: "tilki",
           text:
             "Kış geldi.\n" +
             "Hava soğuk, günler kısa.\n" +
@@ -610,45 +610,45 @@ window.SCENES = [
           choices: null,
           autoNext: "AU_END"
         },
-      { id: "su_06", season: "Yaz", role: "ari", text: "Günler geçti.\nBazı çiçekler daha erken soluyor.\nBazıları ise daha uzun dayanıyor.\nSuyun her yerde aynı olmadığını fark ediyorum.", choices: null, autoNext: "su_07" },
+      { id: "su_06", season: "Yaz", role: "balik", text: "Günler geçti.\nBazı çiçekler daha erken soluyor.\nBazıları ise daha uzun dayanıyor.\nSuyun her yerde aynı olmadığını fark ediyorum.", choices: null, autoNext: "su_07" },
 
       // --- Yaz Karar 4 ---
-      { id: "su_07", season: "Yaz", role: "ari", text: "Sahilde tekne turları yapılmak isteniyor.\nBazıları sessiz ve düzenli turların daha iyi olacağını söylüyor.\nBazıları ise hareketli turların daha çok kişiye ulaşacağını düşünüyor.\nBir seçim yapılacak.", choices: [ { id: "A", label: "Sessiz ve sınırlı tekne turları olsun.", next: "su_07a", tags: ["koruma_onlemi", "maliyet_artti"] }, { id: "B", label: "Daha hareketli turlar olsun, herkes katılabilsin.", next: "su_07b", tags: ["gurultu_artti", "ekonomi_artti"] } ], autoNext: null },
-      { id: "su_07a", season: "Yaz", role: "ari", text: "Tekneler daha yavaş ve sakin ilerliyor.\nBazı insanlar bunun pahalı olabileceğini konuşuyor.\nBen uçarken kıyıda daha az karmaşa görüyorum.", choices: null, autoNext: "su_08" },
-      { id: "su_07b", season: "Yaz", role: "ari", text: "Kıyıda sesler arttı.\nDaha çok insan tekneye biniyor.\nBen uçarken bazı kuşların uzaklaştığını fark eder gibi oluyorum.", choices: null, autoNext: "su_08" },
-      { id: "su_08", season: "Yaz", role: "ari", text: "Bir süre sonra kıyıdaki ses düzeni değişti.\nBazı yerler daha canlı, bazı yerler daha sessiz.\nKimin nerede yaşadığı, kimin nereden uzaklaştığı belli olmuyor…\nama ben bunu hissediyorum.", choices: null, autoNext: "su_09" },
+      { id: "su_07", season: "Yaz", role: "balik", text: "Sahilde tekne turları yapılmak isteniyor.\nBazıları sessiz ve düzenli turların daha iyi olacağını söylüyor.\nBazıları ise hareketli turların daha çok kişiye ulaşacağını düşünüyor.\nBir seçim yapılacak.", choices: [ { id: "A", label: "Sessiz ve sınırlı tekne turları olsun.", next: "su_07a", tags: ["koruma_onlemi", "maliyet_artti"] }, { id: "B", label: "Daha hareketli turlar olsun, herkes katılabilsin.", next: "su_07b", tags: ["gurultu_artti", "ekonomi_artti"] } ], autoNext: null },
+      { id: "su_07a", season: "Yaz", role: "balik", text: "Tekneler daha yavaş ve sakin ilerliyor.\nBazı insanlar bunun pahalı olabileceğini konuşuyor.\nBen uçarken kıyıda daha az karmaşa görüyorum.", choices: null, autoNext: "su_08" },
+      { id: "su_07b", season: "Yaz", role: "balik", text: "Kıyıda sesler arttı.\nDaha çok insan tekneye biniyor.\nBen uçarken bazı kuşların uzaklaştığını fark eder gibi oluyorum.", choices: null, autoNext: "su_08" },
+      { id: "su_08", season: "Yaz", role: "balik", text: "Bir süre sonra kıyıdaki ses düzeni değişti.\nBazı yerler daha canlı, bazı yerler daha sessiz.\nKimin nerede yaşadığı, kimin nereden uzaklaştığı belli olmuyor…\nama ben bunu hissediyorum.", choices: null, autoNext: "su_09" },
 
       // --- Yaz Karar 5 ---
-      { id: "su_09", season: "Yaz", role: "ari", text: "Kalabalık artınca atık konusu konuşuluyor.\nBazıları daha çok çöp kutusu ve düzenli toplama istiyor.\nBazıları ise insanların kendi sorumluluğunu alması gerektiğini söylüyor.\nBir uygulama seçilecek.", choices: [ { id: "A", label: "Daha çok çöp kutusu konulsun, düzenli toplama yapılsın.", next: "su_09a", tags: ["kontrol_var", "koruma_onlemi"] }, { id: "B", label: "Yeni uygulama olmasın; herkes kendi toplasın ve götürsün.", next: "su_09b", tags: ["kontrol_yok", "atık_artti"] } ], autoNext: null },
-      { id: "su_09a", season: "Yaz", role: "ari", text: "Yeni kutular yerleştirildi.\nBazı insanlar daha dikkatli davranıyor.\nAma kalabalık olunca her şeyin yetişmesi zor gibi.", choices: null, autoNext: "su_10" },
-      { id: "su_09b", season: "Yaz", role: "ari", text: "Yeni bir düzenleme yok.\nBazı insanlar gerçekten çöplerini topluyor.\nBazıları ise farkında olmadan iz bırakıyor.", choices: null, autoNext: "su_10" },
-      { id: "su_10", season: "Yaz", role: "ari", text: "Yaz sona eriyor.\nBu mevsimde kararlar daha kalabalık, daha gürültülüydü.\nBazı etkiler hemen fark edildi.\nBazıları ise sonbaharda daha belirgin olacak.\nŞimdi yağmurlar yaklaşıyor.", choices: null, autoNext: "SU_END" },
+      { id: "su_09", season: "Yaz", role: "balik", text: "Kalabalık artınca atık konusu konuşuluyor.\nBazıları daha çok çöp kutusu ve düzenli toplama istiyor.\nBazıları ise insanların kendi sorumluluğunu alması gerektiğini söylüyor.\nBir uygulama seçilecek.", choices: [ { id: "A", label: "Daha çok çöp kutusu konulsun, düzenli toplama yapılsın.", next: "su_09a", tags: ["kontrol_var", "koruma_onlemi"] }, { id: "B", label: "Yeni uygulama olmasın; herkes kendi toplasın ve götürsün.", next: "su_09b", tags: ["kontrol_yok", "atık_artti"] } ], autoNext: null },
+      { id: "su_09a", season: "Yaz", role: "balik", text: "Yeni kutular yerleştirildi.\nBazı insanlar daha dikkatli davranıyor.\nAma kalabalık olunca her şeyin yetişmesi zor gibi.", choices: null, autoNext: "su_10" },
+      { id: "su_09b", season: "Yaz", role: "balik", text: "Yeni bir düzenleme yok.\nBazı insanlar gerçekten çöplerini topluyor.\nBazıları ise farkında olmadan iz bırakıyor.", choices: null, autoNext: "su_10" },
+      { id: "su_10", season: "Yaz", role: "balik", text: "Yaz sona eriyor.\nBu mevsimde kararlar daha kalabalık, daha gürültülüydü.\nBazı etkiler hemen fark edildi.\nBazıları ise sonbaharda daha belirgin olacak.\nŞimdi yağmurlar yaklaşıyor.", choices: null, autoNext: "SU_END" },
   
   // --- YENİ YAZ SAHNELERİ ---
   // Y1 - Sahil Temizliği
-  { id: "yaz_01", season: "Yaz", role: "ari", text: "Sahilde kalabalık arttı.\nUçarken bazı çöpler gözüme çarpıyor.\nBazıları hızlıca toplamayı yeterli görüyor.\n\nNe yapılmalı?", choices: [ { id: "A", label: "Göze çarpan çöpleri toplamak", next: "yaz_01a", tags: ["kontrol_yok", "atık_artti"] }, { id: "B", label: "Tüm alan için düzenli bir temizlik planı yapmak", next: "yaz_01b", tags: ["kontrol_var", "koruma_onlemi"] } ], autoNext: null },
-  { id: "yaz_01a", season: "Yaz", role: "ari", text: "Göze çarpan çöpler toplandı.\nAma bazı küçük parçalar hâlâ duruyor.\nRüzgâr estiğinde bazıları suya karışıyor.", choices: null, autoNext: "yaz_02" },
-  { id: "yaz_01b", season: "Yaz", role: "ari", text: "Düzenli bir temizlik planı yapıldı.\nAlan daha düzenli görünüyor.\nBen uçarken daha az çöp görüyorum.", choices: null, autoNext: "yaz_02" },
+  { id: "yaz_01", season: "Yaz", role: "balik", text: "Sahilde kalabalık arttı.\nUçarken bazı çöpler gözüme çarpıyor.\nBazıları hızlıca toplamayı yeterli görüyor.\n\nNe yapılmalı?", choices: [ { id: "A", label: "Göze çarpan çöpleri toplamak", next: "yaz_01a", tags: ["kontrol_yok", "atık_artti"] }, { id: "B", label: "Tüm alan için düzenli bir temizlik planı yapmak", next: "yaz_01b", tags: ["kontrol_var", "koruma_onlemi"] } ], autoNext: null },
+  { id: "yaz_01a", season: "Yaz", role: "balik", text: "Göze çarpan çöpler toplandı.\nAma bazı küçük parçalar hâlâ duruyor.\nRüzgâr estiğinde bazıları suya karışıyor.", choices: null, autoNext: "yaz_02" },
+  { id: "yaz_01b", season: "Yaz", role: "balik", text: "Düzenli bir temizlik planı yapıldı.\nAlan daha düzenli görünüyor.\nBen uçarken daha az çöp görüyorum.", choices: null, autoNext: "yaz_02" },
   
   // Y2 - Piknik Sonrası
-  { id: "yaz_02", season: "Yaz", role: "ari", text: "Piknik bittikten sonra yerde atıklar kalıyor.\nHerkes gitmek istiyor ama izler duruyor.\n\nNasıl toplanmalı?", choices: [ { id: "A", label: "Hızlıca toparlayıp en yakın kutuya atmak", next: "yaz_02a", tags: ["kontrol_yok", "atık_artti"] }, { id: "B", label: "Ayırarak geri dönüşüme uygun toplamak", next: "yaz_02b", tags: ["kontrol_var", "koruma_onlemi"] } ], autoNext: null },
-  { id: "yaz_02a", season: "Yaz", role: "ari", text: "Atıklar hızlıca toplandı.\nAma bazıları geri dönüşüme uygun değil.\nÇöp kutuları doldu.", choices: null, autoNext: "yaz_03" },
-  { id: "yaz_02b", season: "Yaz", role: "ari", text: "Atıklar ayrılarak toplandı.\nBiraz zaman aldı ama daha düzenli.\nGeri dönüşüm kutuları dolu.", choices: null, autoNext: "yaz_03" },
+  { id: "yaz_02", season: "Yaz", role: "balik", text: "Piknik bittikten sonra yerde atıklar kalıyor.\nHerkes gitmek istiyor ama izler duruyor.\n\nNasıl toplanmalı?", choices: [ { id: "A", label: "Hızlıca toparlayıp en yakın kutuya atmak", next: "yaz_02a", tags: ["kontrol_yok", "atık_artti"] }, { id: "B", label: "Ayırarak geri dönüşüme uygun toplamak", next: "yaz_02b", tags: ["kontrol_var", "koruma_onlemi"] } ], autoNext: null },
+  { id: "yaz_02a", season: "Yaz", role: "balik", text: "Atıklar hızlıca toplandı.\nAma bazıları geri dönüşüme uygun değil.\nÇöp kutuları doldu.", choices: null, autoNext: "yaz_03" },
+  { id: "yaz_02b", season: "Yaz", role: "balik", text: "Atıklar ayrılarak toplandı.\nBiraz zaman aldı ama daha düzenli.\nGeri dönüşüm kutuları dolu.", choices: null, autoNext: "yaz_03" },
   
   // Y3 - Yaz Sulaması
-  { id: "yaz_03", season: "Yaz", role: "ari", text: "Güneş yakıcı.\nSık sulama serinlik hissi veriyor.\nAma suyun her yerde aynı olmadığını fark ediyorum.\n\nSulama nasıl yapılmalı?", choices: [ { id: "A", label: "Serinlik olsun diye sık sık", next: "yaz_03a", tags: ["su_azaldi", "konfor_artti"] }, { id: "B", label: "Sabah veya akşam saatlerinde", next: "yaz_03b", tags: ["koruma_onlemi"] } ], autoNext: null },
-  { id: "yaz_03a", season: "Yaz", role: "ari", text: "Sık sık sulama yapıldı.\nHer yer serin görünüyor.\nAma su kaynakları azalıyor gibi.", choices: null, autoNext: "yaz_04" },
-  { id: "yaz_03b", season: "Yaz", role: "ari", text: "Sabah ve akşam saatlerinde sulama yapıldı.\nSu daha verimli kullanılıyor.\nToprak nemli kalıyor.", choices: null, autoNext: "yaz_04" },
+  { id: "yaz_03", season: "Yaz", role: "balik", text: "Güneş yakıcı.\nSık sulama serinlik hissi veriyor.\nAma suyun her yerde aynı olmadığını fark ediyorum.\n\nSulama nasıl yapılmalı?", choices: [ { id: "A", label: "Serinlik olsun diye sık sık", next: "yaz_03a", tags: ["su_azaldi", "konfor_artti"] }, { id: "B", label: "Sabah veya akşam saatlerinde", next: "yaz_03b", tags: ["koruma_onlemi"] } ], autoNext: null },
+  { id: "yaz_03a", season: "Yaz", role: "balik", text: "Sık sık sulama yapıldı.\nHer yer serin görünüyor.\nAma su kaynakları azalıyor gibi.", choices: null, autoNext: "yaz_04" },
+  { id: "yaz_03b", season: "Yaz", role: "balik", text: "Sabah ve akşam saatlerinde sulama yapıldı.\nSu daha verimli kullanılıyor.\nToprak nemli kalıyor.", choices: null, autoNext: "yaz_04" },
   
   // Y4 - Tekneler
-  { id: "yaz_04", season: "Yaz", role: "ari", text: "Denizde tekneler dolaşıyor.\nSesler arttıkça bazı kuşlar uzaklaşıyor.\nAma insanlar da eğlenmek istiyor.\n\nNasıl devam edilmeli?", choices: [ { id: "A", label: "Daha fazla tekne gezisi düzenlemek", next: "yaz_04a", tags: ["gurultu_artti", "ekonomi_artti"] }, { id: "B", label: "Belirli saatlerde ve sınırlı sayıda yapmak", next: "yaz_04b", tags: ["koruma_onlemi", "maliyet_artti"] } ], autoNext: null },
-  { id: "yaz_04a", season: "Yaz", role: "ari", text: "Daha fazla tekne gezisi düzenlendi.\nDaha çok insan eğleniyor.\nAma kıyıda sesler çok arttı, bazı kuşlar uzaklaştı.", choices: null, autoNext: "yaz_05" },
-  { id: "yaz_04b", season: "Yaz", role: "ari", text: "Tekne gezileri sınırlandırıldı.\nBelirli saatlerde yapılıyor.\nKıyı daha sakin, kuşlar daha yakın.", choices: null, autoNext: "yaz_05" },
+  { id: "yaz_04", season: "Yaz", role: "balik", text: "Denizde tekneler dolaşıyor.\nSesler arttıkça bazı kuşlar uzaklaşıyor.\nAma insanlar da eğlenmek istiyor.\n\nNasıl devam edilmeli?", choices: [ { id: "A", label: "Daha fazla tekne gezisi düzenlemek", next: "yaz_04a", tags: ["gurultu_artti", "ekonomi_artti"] }, { id: "B", label: "Belirli saatlerde ve sınırlı sayıda yapmak", next: "yaz_04b", tags: ["koruma_onlemi", "maliyet_artti"] } ], autoNext: null },
+  { id: "yaz_04a", season: "Yaz", role: "balik", text: "Daha fazla tekne gezisi düzenlendi.\nDaha çok insan eğleniyor.\nAma kıyıda sesler çok arttı, bazı kuşlar uzaklaştı.", choices: null, autoNext: "yaz_05" },
+  { id: "yaz_04b", season: "Yaz", role: "balik", text: "Tekne gezileri sınırlandırıldı.\nBelirli saatlerde yapılıyor.\nKıyı daha sakin, kuşlar daha yakın.", choices: null, autoNext: "yaz_05" },
   
   // Y5 - Etkinlik Alanı
-  { id: "yaz_05", season: "Yaz", role: "ari", text: "Sahilde oyun ve etkinlik alanı kurulacak.\nAlan büyürse daha çok kişi gelecek.\nAma bazı doğal alanlar zarar görebilir.\n\nNerede kurulmalı?", choices: [ { id: "A", label: "Geniş bir alan açarak", next: "yaz_05a", tags: ["kalabalik_artti", "habitat_daraldi"] }, { id: "B", label: "Doğal alanlara dokunmadan", next: "yaz_05b", tags: ["habitat_korundu", "erisimi_zorlasti"] } ], autoNext: null },
-  { id: "yaz_05a", season: "Yaz", role: "ari", text: "Geniş bir alan açıldı.\nDaha çok insan gelebiliyor.\nAma bazı doğal alanlar kayboldu.", choices: null, autoNext: "SU_END" },
-  { id: "yaz_05b", season: "Yaz", role: "ari", text: "Doğal alanlara dokunulmadan küçük bir alan ayrıldı.\nDaha az kişi gelebiliyor.\nAma doğal alanlar korundu.", choices: null, autoNext: "SU_END" },
+  { id: "yaz_05", season: "Yaz", role: "balik", text: "Sahilde oyun ve etkinlik alanı kurulacak.\nAlan büyürse daha çok kişi gelecek.\nAma bazı doğal alanlar zarar görebilir.\n\nNerede kurulmalı?", choices: [ { id: "A", label: "Geniş bir alan açarak", next: "yaz_05a", tags: ["kalabalik_artti", "habitat_daraldi"] }, { id: "B", label: "Doğal alanlara dokunmadan", next: "yaz_05b", tags: ["habitat_korundu", "erisimi_zorlasti"] } ], autoNext: null },
+  { id: "yaz_05a", season: "Yaz", role: "balik", text: "Geniş bir alan açıldı.\nDaha çok insan gelebiliyor.\nAma bazı doğal alanlar kayboldu.", choices: null, autoNext: "SU_END" },
+  { id: "yaz_05b", season: "Yaz", role: "balik", text: "Doğal alanlara dokunulmadan küçük bir alan ayrıldı.\nDaha az kişi gelebiliyor.\nAma doğal alanlar korundu.", choices: null, autoNext: "SU_END" },
     // --- İlkbahar Karar 4 ---
     { id: "sp_07", season: "İlkbahar", role: "ari", text: "Dere kenarında yerde yapraklar ve küçük dallar birikmiş.\nBazıları buranın daha temiz görünmesini istiyor.\nBazıları ise yerde kalanların toprağa karışmasının önemli olduğunu söylüyor.\nNe yapılacağı konuşuluyor.", choices: [ { id: "A", label: "Yapraklar ve dallar toplanıp alandan çıkarılsın.", next: "sp_07a", tags: ["konfor_artti", "toprak_sikisti"] }, { id: "B", label: "Yapraklar yerde kalsın, doğaya karışsın.", next: "sp_07b", tags: ["koruma_onlemi", "yerel_biyo_destek"] } ], autoNext: null },
     { id: "sp_07a", season: "İlkbahar", role: "ari", text: "Alan daha düzenli görünüyor.\nYürümek kolaylaştı.\nToprak ise çıplak kaldığı yerlerde daha sert.", choices: null, autoNext: "sp_08" },
@@ -724,16 +724,16 @@ window.SCENES = [
 
   // --- Yaz ---
   // --- ÖRNEK SET 2: Sahil ışıkları ---
-  { id: "su_01", season: "Yaz", role: "ari", text: "Yaz geldi. Akşamları sahil kalabalık.\nİnsanlar yürürken kendini güvende hissetmek istiyor.\nBazıları ışıkların tüm gece açık kalmasını savunuyor.\nBazıları ise ışıkların bazı canlıları şaşırtabileceğini düşünüyor.", choices: [ { id: "A", label: "Işıklar bütün gece açık kalsın.", next: "su_01a", tags: ["guvenlik_artti", "isik_kirliligi"] }, { id: "B", label: "Işıklar belirli saatlerde azaltılsın.", next: "su_01b", tags: ["habitat_korundu", "erisimi_zorlasti"] } ], autoNext: null },
-  { id: "su_01a", season: "Yaz", role: "ari", text: "Gece olduğunda sahil daha aydınlık.\nİnsanlar yürürken daha rahat.\nBen ise ışıkların altında uçmayı deniyorum.", choices: null, autoNext: "su_02" },
-  { id: "su_01b", season: "Yaz", role: "ari", text: "Gece olduğunda ışıklar bir süre sonra azalıyor.\nBazı insanlar karanlığa alışmaya çalışıyor.\nBen de daha loş yerlerde yönümü buluyorum.", choices: null, autoNext: "su_02" },
-  { id: "su_02", season: "Yaz", role: "ari", text: "Bir iki gün geçti.\nBazı canlılar eskisi kadar görünmüyor gibi.\nSahil hâlâ güzel…\nama gecenin havası biraz değişmiş.", choices: null, autoNext: "su_03" },
+  { id: "su_01", season: "Yaz", role: "balik", text: "Yaz geldi. Akşamları sahil kalabalık.\nİnsanlar yürürken kendini güvende hissetmek istiyor.\nBazıları ışıkların tüm gece açık kalmasını savunuyor.\nBazıları ise ışıkların bazı canlıları şaşırtabileceğini düşünüyor.", choices: [ { id: "A", label: "Işıklar bütün gece açık kalsın.", next: "su_01a", tags: ["guvenlik_artti", "isik_kirliligi"] }, { id: "B", label: "Işıklar belirli saatlerde azaltılsın.", next: "su_01b", tags: ["habitat_korundu", "erisimi_zorlasti"] } ], autoNext: null },
+  { id: "su_01a", season: "Yaz", role: "balik", text: "Gece olduğunda sahil daha aydınlık.\nİnsanlar yürürken daha rahat.\nBen ise ışıkların altında uçmayı deniyorum.", choices: null, autoNext: "su_02" },
+  { id: "su_01b", season: "Yaz", role: "balik", text: "Gece olduğunda ışıklar bir süre sonra azalıyor.\nBazı insanlar karanlığa alışmaya çalışıyor.\nBen de daha loş yerlerde yönümü buluyorum.", choices: null, autoNext: "su_02" },
+  { id: "su_02", season: "Yaz", role: "balik", text: "Bir iki gün geçti.\nBazı canlılar eskisi kadar görünmüyor gibi.\nSahil hâlâ güzel…\nama gecenin havası biraz değişmiş.", choices: null, autoNext: "su_03" },
 
   // --- ÖRNEK SET 3: Yaz / Turizm yönetimi ---
-  { id: "su_03", season: "Yaz", role: "ari", text: "Günler geçtikçe sahile daha çok kişi geliyor.\nBazıları, kalabalık olursa herkesin doğayı daha çok seveceğini söylüyor.\nBazıları ise aşırı kalabalığın doğayı yorabileceğini düşünüyor.\nBir karar verilecek.", choices: [ { id: "A", label: "Günlük ziyaretçi sayısı sınırlandırılsın.", next: "su_03a", tags: ["koruma_onlemi", "erisimi_zorlasti", "turizm_sinirlandi"] }, { id: "B", label: "Sınır olmasın; uyarı tabelaları ve çöp kutuları artırılsın.", next: "su_03b", tags: ["kontrol_var", "kalabalik_artti", "turizm_serbest"] } ], autoNext: null },
-  { id: "su_03a", season: "Yaz", role: "ari", text: "Girişte bazı kurallar kondu.\nHerkes istediği anda gelemiyor.\nSahil daha sakin görünüyor, ama bazı insanlar bundan hoşlanmıyor.", choices: null, autoNext: "su_04" },
-  { id: "su_03b", season: "Yaz", role: "ari", text: "Yeni tabelalar asıldı, daha çok çöp kutusu kondu.\nHerkes sahile gelebiliyor.\nKalabalık artıyor, ama bazı kişiler daha dikkatli davranıyor gibi.", choices: null, autoNext: "su_04" },
-  { id: "su_04", season: "Yaz", role: "ari", text: "Bir süre sonra sahilde farklı bir hava var.\nBazı yerler daha düzenli, bazı yerler daha yoğun.\nBen çiçek ararken, insanların izlerini de görüyorum.\nHer şey aynı kalmıyor.", choices: null, autoNext: "au_01" },
+  { id: "su_03", season: "Yaz", role: "balik", text: "Günler geçtikçe sahile daha çok kişi geliyor.\nBazıları, kalabalık olursa herkesin doğayı daha çok seveceğini söylüyor.\nBazıları ise aşırı kalabalığın doğayı yorabileceğini düşünüyor.\nBir karar verilecek.", choices: [ { id: "A", label: "Günlük ziyaretçi sayısı sınırlandırılsın.", next: "su_03a", tags: ["koruma_onlemi", "erisimi_zorlasti", "turizm_sinirlandi"] }, { id: "B", label: "Sınır olmasın; uyarı tabelaları ve çöp kutuları artırılsın.", next: "su_03b", tags: ["kontrol_var", "kalabalik_artti", "turizm_serbest"] } ], autoNext: null },
+  { id: "su_03a", season: "Yaz", role: "balik", text: "Girişte bazı kurallar kondu.\nHerkes istediği anda gelemiyor.\nSahil daha sakin görünüyor, ama bazı insanlar bundan hoşlanmıyor.", choices: null, autoNext: "su_04" },
+  { id: "su_03b", season: "Yaz", role: "balik", text: "Yeni tabelalar asıldı, daha çok çöp kutusu kondu.\nHerkes sahile gelebiliyor.\nKalabalık artıyor, ama bazı kişiler daha dikkatli davranıyor gibi.", choices: null, autoNext: "su_04" },
+  { id: "su_04", season: "Yaz", role: "balik", text: "Bir süre sonra sahilde farklı bir hava var.\nBazı yerler daha düzenli, bazı yerler daha yoğun.\nBen çiçek ararken, insanların izlerini de görüyorum.\nHer şey aynı kalmıyor.", choices: null, autoNext: "au_01" },
 
   // --- ÖRNEK SET 4: Sonbahar / Dere yatağı ---
   { id: "au_01", season: "Sonbahar", role: "agac", text: "Sonbahar geldi. Yağmurlar başladı.\nBen köklerimle toprağı tutuyorum.\nİnsanlar su yükselirse taşkın olmasından endişe ediyor.\nBiri 'dere yatağını daraltalım' diyor.\nDiğeri 'taşkın alanını geniş bırakalım' diyor.\nHangisi seçilecek?", choices: [ { id: "A", label: "Güvenlik için dere yatağı daraltılsın, kenarlar güçlendirilsin.", next: "au_01a", tags: ["guvenlik_artti", "dere_yatagi_daraldi", "habitat_daraldi"] }, { id: "B", label: "Dere doğal aksın; taşkın alanı geniş bırakılsın.", next: "au_01b", tags: ["koruma_onlemi", "dere_yatagi_dogal", "erisimi_zorlasti"] } ], autoNext: null },
@@ -745,47 +745,47 @@ text:
           choices: null,
           autoNext: "s31"
         },
-  { id: "s16", season: "Yaz", role: "ari", text: "Yaz geldi. Hava sıcak. Ne yapmak istersin?", choices: [ { id: "A", label: "Gölgelik bir yerde dinlen", next: "s17a", tags: ["dinlenme"] }, { id: "B", label: "Yakındaki dereden su iç", next: "s17b", tags: ["su_tuketimi_artti"] } ], autoNext: null },
-  { id: "s17a", season: "Yaz", role: "ari", text: "Biraz dinlendin ve enerjini topladın.", choices: null, autoNext: "s18" },
-  { id: "s17b", season: "Yaz", role: "ari", text: "Serin su seni ferahlattı.", choices: null, autoNext: "s18" },
-  { id: "s18", season: "Yaz", role: "ari", text: "Bahçede odun kesimi yapılacak. Ne yapmalı?", choices: [ { id: "A", label: "Odun kesilsin", next: "s19a", tags: ["odun_kesimi"] }, { id: "B", label: "Alternatif yakıt kullanılsın", next: "s19b", tags: ["alternatif_yakit"] } ], autoNext: null },
-  { id: "s19a", season: "Yaz", role: "ari", text: "Odunlar toplandı. Bahçede gölge azaldı.", choices: null, autoNext: "s20" },
-  { id: "s19b", season: "Yaz", role: "ari", text: "Alternatif yakıt kullanıldı. Bahçede değişiklik var.", choices: null, autoNext: "s20" },
-  { id: "s20", season: "Yaz", role: "ari", text: "Turizm sezonu başladı. Ne yapılmalı?", choices: [ { id: "A", label: "Turizm sınırlandırılsın", next: "s21a", tags: ["turizm_sinirlandi"] }, { id: "B", label: "Turizm serbest olsun", next: "s21b", tags: ["turizm_serbest"] } ], autoNext: null },
-  { id: "s21a", season: "Yaz", role: "ari", text: "Turizm sınırlandı. Sahil daha sakin.", choices: null, autoNext: "s22" },
-  { id: "s21b", season: "Yaz", role: "ari", text: "Turizm serbest. Sahil kalabalık.", choices: null, autoNext: "s22" },
-  { id: "s22", season: "Yaz", role: "ari", text: "Yaz sona erdi. Sonbahar başlıyor.", choices: null, autoNext: "s31" },
+  { id: "s16", season: "Yaz", role: "balik", text: "Yaz geldi. Hava sıcak. Ne yapmak istersin?", choices: [ { id: "A", label: "Gölgelik bir yerde dinlen", next: "s17a", tags: ["dinlenme"] }, { id: "B", label: "Yakındaki dereden su iç", next: "s17b", tags: ["su_tuketimi_artti"] } ], autoNext: null },
+  { id: "s17a", season: "Yaz", role: "balik", text: "Biraz dinlendin ve enerjini topladın.", choices: null, autoNext: "s18" },
+  { id: "s17b", season: "Yaz", role: "balik", text: "Serin su seni ferahlattı.", choices: null, autoNext: "s18" },
+  { id: "s18", season: "Yaz", role: "balik", text: "Bahçede odun kesimi yapılacak. Ne yapmalı?", choices: [ { id: "A", label: "Odun kesilsin", next: "s19a", tags: ["odun_kesimi"] }, { id: "B", label: "Alternatif yakıt kullanılsın", next: "s19b", tags: ["alternatif_yakit"] } ], autoNext: null },
+  { id: "s19a", season: "Yaz", role: "balik", text: "Odunlar toplandı. Bahçede gölge azaldı.", choices: null, autoNext: "s20" },
+  { id: "s19b", season: "Yaz", role: "balik", text: "Alternatif yakıt kullanıldı. Bahçede değişiklik var.", choices: null, autoNext: "s20" },
+  { id: "s20", season: "Yaz", role: "balik", text: "Turizm sezonu başladı. Ne yapılmalı?", choices: [ { id: "A", label: "Turizm sınırlandırılsın", next: "s21a", tags: ["turizm_sinirlandi"] }, { id: "B", label: "Turizm serbest olsun", next: "s21b", tags: ["turizm_serbest"] } ], autoNext: null },
+  { id: "s21a", season: "Yaz", role: "balik", text: "Turizm sınırlandı. Sahil daha sakin.", choices: null, autoNext: "s22" },
+  { id: "s21b", season: "Yaz", role: "balik", text: "Turizm serbest. Sahil kalabalık.", choices: null, autoNext: "s22" },
+  { id: "s22", season: "Yaz", role: "balik", text: "Yaz sona erdi. Sonbahar başlıyor.", choices: null, autoNext: "s31" },
 
   // --- Sonbahar (eventli) ---
-  { id: "s31", season: "Sonbahar", role: "ari", text: "Sonbahar geldi. Hava serinledi. Ne yapmak istersin?", choices: [ { id: "A", label: "Kovanı onar", next: "s32a", tags: [] }, { id: "B", label: "Çiçek aramaya çık", next: "s32b", tags: ["hareket"] } ], autoNext: null },
-  { id: "s32a", season: "Sonbahar", role: "ari", text: "Kovanı onardın. Kışa hazırlık başladı.", choices: null, autoNext: "s33" },
-  { id: "s32b", season: "Sonbahar", role: "ari", text: "Çiçek ararken yeni yerler keşfettin.", choices: null, autoNext: "s33" },
+  { id: "s31", season: "Sonbahar", role: "balik", text: "Sonbahar geldi. Hava serinledi. Ne yapmak istersin?", choices: [ { id: "A", label: "Kovanı onar", next: "s32a", tags: [] }, { id: "B", label: "Çiçek aramaya çık", next: "s32b", tags: ["hareket"] } ], autoNext: null },
+  { id: "s32a", season: "Sonbahar", role: "balik", text: "Kovanı onardın. Kışa hazırlık başladı.", choices: null, autoNext: "s33" },
+  { id: "s32b", season: "Sonbahar", role: "balik", text: "Çiçek ararken yeni yerler keşfettin.", choices: null, autoNext: "s33" },
   // Event: sel_riski varsa ara sahne
-  { id: "s33", season: "Sonbahar", role: "ari", text: "Yağmurlar başladı. Derede su seviyesi yükseldi.", choices: null, autoNext: "s33_sel" },
-  { id: "s33_sel", season: "Sonbahar", role: "ari", text: "Derede taşkın riski var. Çevrede değişiklikler gözleniyor.", choices: null, autoNext: "s34" },
-  { id: "s34", season: "Sonbahar", role: "ari", text: "Kışa hazırlık için polen topluyorsun.", choices: [ { id: "A", label: "Yakındaki çiçeklerden topla", next: "s35a", tags: ["beslenme"] }, { id: "B", label: "Uzak çiçeklere git", next: "s35b", tags: ["hareket"] } ], autoNext: null },
-  { id: "s35a", season: "Sonbahar", role: "ari", text: "Yakındaki çiçeklerden polen topladın.", choices: null, autoNext: "s36" },
-  { id: "s35b", season: "Sonbahar", role: "ari", text: "Uzak çiçeklere gittin. Yolculuk uzun sürdü.", choices: null, autoNext: "s36" },
-  { id: "s36", season: "Sonbahar", role: "ari", text: "Sonbahar sona erdi. Kış başlıyor.", choices: null, autoNext: "s46" },
+  { id: "s33", season: "Sonbahar", role: "balik", text: "Yağmurlar başladı. Derede su seviyesi yükseldi.", choices: null, autoNext: "s33_sel" },
+  { id: "s33_sel", season: "Sonbahar", role: "balik", text: "Derede taşkın riski var. Çevrede değişiklikler gözleniyor.", choices: null, autoNext: "s34" },
+  { id: "s34", season: "Sonbahar", role: "balik", text: "Kışa hazırlık için polen topluyorsun.", choices: [ { id: "A", label: "Yakındaki çiçeklerden topla", next: "s35a", tags: ["beslenme"] }, { id: "B", label: "Uzak çiçeklere git", next: "s35b", tags: ["hareket"] } ], autoNext: null },
+  { id: "s35a", season: "Sonbahar", role: "balik", text: "Yakındaki çiçeklerden polen topladın.", choices: null, autoNext: "s36" },
+  { id: "s35b", season: "Sonbahar", role: "balik", text: "Uzak çiçeklere gittin. Yolculuk uzun sürdü.", choices: null, autoNext: "s36" },
+  { id: "s36", season: "Sonbahar", role: "balik", text: "Sonbahar sona erdi. Kış başlıyor.", choices: null, autoNext: "s46" },
 
   // --- Kış ---
-  { id: "s46", season: "Kış", role: "ari", text: "Kış geldi. Hava soğuk. Kovanında kalmak mı istersin?", choices: [ { id: "A", label: "Kovanında kal", next: "s47a", tags: [] }, { id: "B", label: "Dışarı çık ve çevreyi gözle", next: "s47b", tags: ["hareket"] } ], autoNext: null },
-  { id: "s47a", season: "Kış", role: "ari", text: "Kovanında kaldın. Sıcak ve güvendesin.", choices: null, autoNext: "s48" },
-  { id: "s47b", season: "Kış", role: "ari", text: "Dışarı çıktın. Kar yağışı başladı.", choices: null, autoNext: "s48" },
-  { id: "s48", season: "Kış", role: "ari", text: "Kış boyunca yiyecek bulmak zorlaştı.", choices: null, autoNext: "final" },
+  { id: "s46", season: "Kış", role: "tilki", text: "Kış geldi. Hava soğuk. Kovanında kalmak mı istersin?", choices: [ { id: "A", label: "Kovanında kal", next: "s47a", tags: [] }, { id: "B", label: "Dışarı çık ve çevreyi gözle", next: "s47b", tags: ["hareket"] } ], autoNext: null },
+  { id: "s47a", season: "Kış", role: "tilki", text: "Kovanında kaldın. Sıcak ve güvendesin.", choices: null, autoNext: "s48" },
+  { id: "s47b", season: "Kış", role: "tilki", text: "Dışarı çıktın. Kar yağışı başladı.", choices: null, autoNext: "s48" },
+  { id: "s48", season: "Kış", role: "tilki", text: "Kış boyunca yiyecek bulmak zorlaştı.", choices: null, autoNext: "final" },
 
   // --- Final yönlendirme ---
-  { id: "final", season: "Kış", role: "ari", text: "Bir yıl sona erdi. Sonuçlar değerlendiriliyor...", choices: null, autoNext: "FINAL_PICK" },
+  { id: "final", season: "Kış", role: "tilki", text: "Bir yıl sona erdi. Sonuçlar değerlendiriliyor...", choices: null, autoNext: "FINAL_PICK" },
   // --- Final sahneleri (agac rolü, 7-10 yaşa uygun, yargılamayan) ---
-  { id: "final_1", season: "Kış", role: "agac", text: "Bir yıl geçti.\nBazı yerler canlıydı, su akışı düzenliydi.\nToprak daha sağlam, hava hafifti.\nHer şeyin birbiriyle bağlantısı vardı.", choices: null },
-  { id: "final_1_good", season: "Kış", role: "agac", text: "Bir yıl geçti.\nÇoğu şey dengeli kaldı.\nDoğa nefes alıyor, canlılar yaşıyor.\nKüçük kararlar büyük farklar yaratabilir.", choices: null },
-  { id: "final_perfect", season: "Kış", role: "agac", text: "Bir yıl geçti.\nHer şey mükemmel dengede.\nKoruma önlemleri işe yaradı.\nDoğa ve insan birlikte uyum içinde.\nBu bir başarı hikayesi!", choices: null },
-  { id: "final_2", season: "Kış", role: "agac", text: "Yıl bitti.\nBazı alanlarda değişim vardı, bazı yerler toparlanıyordu.\nSu bazen azaldı, toprak bazen yoruldu.\nHer mevsim yeni bir iz bıraktı.", choices: null },
-  { id: "final_3", season: "Kış", role: "agac", text: "Bir yıl daha sona erdi.\nBazı sesler azalmıştı, su ve toprak daha kırılgandı.\nHava bazen ağırlaştı, çeşitlilik azaldı.\nDoğa sessizce değişti.", choices: null },
-  { id: "final_4", season: "Kış", role: "agac", text: "Yıl bitti.\nBazı alanlarda sessizlik vardı.\nÇeşitlilik azaldı, su bulanıktı.\nNefes almak bazen zorlaştı.\nHer şeyin izi kaldı.", choices: null },
+  { id: "final_1", season: "Kış", role: "tilki", text: "Bir yıl geçti.\nBazı yerler canlıydı, su akışı düzenliydi.\nToprak daha sağlam, hava hafifti.\nHer şeyin birbiriyle bağlantısı vardı.", choices: null },
+  { id: "final_1_good", season: "Kış", role: "tilki", text: "Bir yıl geçti.\nÇoğu şey dengeli kaldı.\nDoğa nefes alıyor, canlılar yaşıyor.\nKüçük kararlar büyük farklar yaratabilir.", choices: null },
+  { id: "final_perfect", season: "Kış", role: "tilki", text: "Bir yıl geçti.\nHer şey mükemmel dengede.\nKoruma önlemleri işe yaradı.\nDoğa ve insan birlikte uyum içinde.\nBu bir başarı hikayesi!", choices: null },
+  { id: "final_2", season: "Kış", role: "tilki", text: "Yıl bitti.\nBazı alanlarda değişim vardı, bazı yerler toparlanıyordu.\nSu bazen azaldı, toprak bazen yoruldu.\nHer mevsim yeni bir iz bıraktı.", choices: null },
+  { id: "final_3", season: "Kış", role: "tilki", text: "Bir yıl daha sona erdi.\nBazı sesler azalmıştı, su ve toprak daha kırılgandı.\nHava bazen ağırlaştı, çeşitlilik azaldı.\nDoğa sessizce değişti.", choices: null },
+  { id: "final_4", season: "Kış", role: "tilki", text: "Yıl bitti.\nBazı alanlarda sessizlik vardı.\nÇeşitlilik azaldı, su bulanıktı.\nNefes almak bazen zorlaştı.\nHer şeyin izi kaldı.", choices: null },
   // --- Standart Mevsim Kapanışları ---
   { id: "SP_END", season: "İlkbahar", role: "ari", text: "İlkbahar sona erdi.\nBirçok küçük karar verildi.\nBazı etkiler hemen görüldü, bazıları zamanla ortaya çıkacak.\nDoğa değişmeye devam ediyor.\nŞimdi yaz başlıyor.", choices: null, autoNext: "SU_START" },
-  { id: "SU_END", season: "Yaz", role: "ari", text: "Yaz sona erdi.\nHer yerde hareket ve ses vardı.\nBazı etkiler hemen fark edildi, bazıları sonbaharda ortaya çıkacak.\nHer şey değişiyor.\nŞimdi sonbahar başlıyor.", choices: null, autoNext: "AU_START" },
+  { id: "SU_END", season: "Yaz", role: "balik", text: "Yaz sona erdi.\nHer yerde hareket ve ses vardı.\nBazı etkiler hemen fark edildi, bazıları sonbaharda ortaya çıkacak.\nHer şey değişiyor.\nŞimdi sonbahar başlıyor.", choices: null, autoNext: "AU_START" },
   { id: "AU_END", season: "Sonbahar", role: "agac", text: "Sonbahar sona erdi.\nYağmur, rüzgâr ve insanlar iz bıraktı.\nBazı etkiler hemen, bazıları kışta daha belirgin olacak.\nDoğa dinlenmeye hazırlanıyor.\nŞimdi kış başlıyor.", choices: null, autoNext: "WI_START" },
   
   // --- YENİ SONBAHAR SAHNELERİ ---
@@ -816,27 +816,27 @@ text:
   
   // --- YENİ KIŞ SAHNELERİ ---
   // K1 - Kar Temizliği
-  { id: "kis_01", season: "Kış", role: "agac", text: "Yollar buz tuttu.\nTuz dökülürse insanlar rahat edecek.\nAma eriyen kar toprağa karışacak.\n\nNasıl temizlenmeli?", choices: [ { id: "A", label: "Tuz dökmek", next: "kis_01a", tags: ["guvenlik_artti", "kimyasal_artti"] }, { id: "B", label: "Doğal yöntemler denemek", next: "kis_01b", tags: ["emek_artti", "koruma_onlemi"] } ], autoNext: null },
-  { id: "kis_01a", season: "Kış", role: "agac", text: "Tuz döküldü.\nYollar hemen açıldı.\nAma eriyen kar toprağa karıştı.", choices: null, autoNext: "kis_02" },
-  { id: "kis_01b", season: "Kış", role: "agac", text: "Doğal yöntemler denendi.\nBiraz zaman aldı.\nAma toprak temiz kaldı.", choices: null, autoNext: "kis_02" },
+  { id: "kis_01", season: "Kış", role: "tilki", text: "Yollar buz tuttu.\nTuz dökülürse insanlar rahat edecek.\nAma eriyen kar toprağa karışacak.\n\nNasıl temizlenmeli?", choices: [ { id: "A", label: "Tuz dökmek", next: "kis_01a", tags: ["guvenlik_artti", "kimyasal_artti"] }, { id: "B", label: "Doğal yöntemler denemek", next: "kis_01b", tags: ["emek_artti", "koruma_onlemi"] } ], autoNext: null },
+  { id: "kis_01a", season: "Kış", role: "tilki", text: "Tuz döküldü.\nYollar hemen açıldı.\nAma eriyen kar toprağa karıştı.", choices: null, autoNext: "kis_02" },
+  { id: "kis_01b", season: "Kış", role: "tilki", text: "Doğal yöntemler denendi.\nBiraz zaman aldı.\nAma toprak temiz kaldı.", choices: null, autoNext: "kis_02" },
   
   // K2 - Hayvanlar
-  { id: "kis_02", season: "Kış", role: "agac", text: "Soğukta bazı hayvanlar yiyecek arıyor.\n\nNasıl yardım edilmeli?", choices: [ { id: "A", label: "Her yere bolca yiyecek bırakmak", next: "kis_02a", tags: ["konfor_artti", "atık_artti"] }, { id: "B", label: "Kontrollü ve uygun alanlara bırakmak", next: "kis_02b", tags: ["kontrol_var", "koruma_onlemi"] } ], autoNext: null },
-  { id: "kis_02a", season: "Kış", role: "agac", text: "Her yere bolca yiyecek bırakıldı.\nHayvanlar kolayca buluyor.\nAma bazı yerler kirlendi.", choices: null, autoNext: "kis_03" },
-  { id: "kis_02b", season: "Kış", role: "agac", text: "Kontrollü alanlara yiyecek bırakıldı.\nBiraz düzen gerektirdi.\nAma alan temiz kaldı.", choices: null, autoNext: "kis_03" },
+  { id: "kis_02", season: "Kış", role: "tilki", text: "Soğukta bazı hayvanlar yiyecek arıyor.\n\nNasıl yardım edilmeli?", choices: [ { id: "A", label: "Her yere bolca yiyecek bırakmak", next: "kis_02a", tags: ["konfor_artti", "atık_artti"] }, { id: "B", label: "Kontrollü ve uygun alanlara bırakmak", next: "kis_02b", tags: ["kontrol_var", "koruma_onlemi"] } ], autoNext: null },
+  { id: "kis_02a", season: "Kış", role: "tilki", text: "Her yere bolca yiyecek bırakıldı.\nHayvanlar kolayca buluyor.\nAma bazı yerler kirlendi.", choices: null, autoNext: "kis_03" },
+  { id: "kis_02b", season: "Kış", role: "tilki", text: "Kontrollü alanlara yiyecek bırakıldı.\nBiraz düzen gerektirdi.\nAma alan temiz kaldı.", choices: null, autoNext: "kis_03" },
   
   // K3 - Isınma
-  { id: "kis_03", season: "Kış", role: "agac", text: "Evler daha çok ısınıyor.\nHava bazen ağırlaşıyor.\n\nNasıl ısınmalı?", choices: [ { id: "A", label: "Daha sıcak olsun diye fazla ısınmak", next: "kis_03a", tags: ["hava_kirliligi", "konfor_artti"] }, { id: "B", label: "Gerekli kadar ısınmak", next: "kis_03b", tags: ["alternatif_yakit", "maliyet_artti"] } ], autoNext: null },
-  { id: "kis_03a", season: "Kış", role: "agac", text: "Daha fazla ısınıldı.\nEvler sıcak.\nAma havada duman kokusu var.", choices: null, autoNext: "kis_04" },
-  { id: "kis_03b", season: "Kış", role: "agac", text: "Gerekli kadar ısınıldı.\nBiraz dikkat gerektirdi.\nAma hava daha temiz.", choices: null, autoNext: "kis_04" },
+  { id: "kis_03", season: "Kış", role: "tilki", text: "Evler daha çok ısınıyor.\nHava bazen ağırlaşıyor.\n\nNasıl ısınmalı?", choices: [ { id: "A", label: "Daha sıcak olsun diye fazla ısınmak", next: "kis_03a", tags: ["hava_kirliligi", "konfor_artti"] }, { id: "B", label: "Gerekli kadar ısınmak", next: "kis_03b", tags: ["alternatif_yakit", "maliyet_artti"] } ], autoNext: null },
+  { id: "kis_03a", season: "Kış", role: "tilki", text: "Daha fazla ısınıldı.\nEvler sıcak.\nAma havada duman kokusu var.", choices: null, autoNext: "kis_04" },
+  { id: "kis_03b", season: "Kış", role: "tilki", text: "Gerekli kadar ısınıldı.\nBiraz dikkat gerektirdi.\nAma hava daha temiz.", choices: null, autoNext: "kis_04" },
   
   // K4 - Kış Yürüyüşü
-  { id: "kis_04", season: "Kış", role: "agac", text: "Kışın da insanlar yürümek istiyor.\nAma ben biraz dinlenmek istiyorum.\n\nNe yapılmalı?", choices: [ { id: "A", label: "Yolları sürekli açık tutmak", next: "kis_04a", tags: ["konfor_artti", "toprak_sikisti"] }, { id: "B", label: "Doğayı dinlenmeye bırakmak", next: "kis_04b", tags: ["turizm_sinirlandi", "koruma_onlemi"] } ], autoNext: null },
-  { id: "kis_04a", season: "Kış", role: "agac", text: "Yollar sürekli açık tutuldu.\nHerkes yürüyebiliyor.\nAma doğa dinlenemiyor.", choices: null, autoNext: "kis_05" },
-  { id: "kis_04b", season: "Kış", role: "agac", text: "Doğa dinlenmeye bırakıldı.\nYollar bazen kapalı.\nAma doğa nefes alıyor.", choices: null, autoNext: "kis_05" },
+  { id: "kis_04", season: "Kış", role: "tilki", text: "Kışın da insanlar yürümek istiyor.\nAma ben biraz dinlenmek istiyorum.\n\nNe yapılmalı?", choices: [ { id: "A", label: "Yolları sürekli açık tutmak", next: "kis_04a", tags: ["konfor_artti", "toprak_sikisti"] }, { id: "B", label: "Doğayı dinlenmeye bırakmak", next: "kis_04b", tags: ["turizm_sinirlandi", "koruma_onlemi"] } ], autoNext: null },
+  { id: "kis_04a", season: "Kış", role: "tilki", text: "Yollar sürekli açık tutuldu.\nHerkes yürüyebiliyor.\nAma doğa dinlenemiyor.", choices: null, autoNext: "kis_05" },
+  { id: "kis_04b", season: "Kış", role: "tilki", text: "Doğa dinlenmeye bırakıldı.\nYollar bazen kapalı.\nAma doğa nefes alıyor.", choices: null, autoNext: "kis_05" },
   
   // K5 - Yıl Sonu
-  { id: "kis_05", season: "Kış", role: "agac", text: "Bir yıl boyunca pek çok karar verildi.\nBazıları hemen işe yaradı.\nBazıları zamanla etkisini gösterdi.\n\nHangisi daha önemli?", choices: [ { id: "A", label: "O an işe yarayan çözümler", next: "kis_05a", tags: ["ekonomi_artti", "kalabalik_artti"] }, { id: "B", label: "Uzun vadede doğayı koruyan çözümler", next: "kis_05b", tags: ["koruma_onlemi", "erisimi_zorlasti"] } ], autoNext: null },
-  { id: "kis_05a", season: "Kış", role: "agac", text: "Hızlı çözümler seçildi.\nHer şey hemen düzeldi.\nAma bazı etkiler zamanla ortaya çıktı.", choices: null, autoNext: "FINAL_PICK" },
-  { id: "kis_05b", season: "Kış", role: "agac", text: "Uzun vadeli çözümler seçildi.\nBiraz zaman aldı.\nAma doğa korundu.", choices: null, autoNext: "FINAL_PICK" },
+  { id: "kis_05", season: "Kış", role: "tilki", text: "Bir yıl boyunca pek çok karar verildi.\nBazıları hemen işe yaradı.\nBazıları zamanla etkisini gösterdi.\n\nHangisi daha önemli?", choices: [ { id: "A", label: "O an işe yarayan çözümler", next: "kis_05a", tags: ["ekonomi_artti", "kalabalik_artti"] }, { id: "B", label: "Uzun vadede doğayı koruyan çözümler", next: "kis_05b", tags: ["koruma_onlemi", "erisimi_zorlasti"] } ], autoNext: null },
+  { id: "kis_05a", season: "Kış", role: "tilki", text: "Hızlı çözümler seçildi.\nHer şey hemen düzeldi.\nAma bazı etkiler zamanla ortaya çıktı.", choices: null, autoNext: "FINAL_PICK" },
+  { id: "kis_05b", season: "Kış", role: "tilki", text: "Uzun vadeli çözümler seçildi.\nBiraz zaman aldı.\nAma doğa korundu.", choices: null, autoNext: "FINAL_PICK" },
 ];
