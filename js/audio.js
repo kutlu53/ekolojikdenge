@@ -153,7 +153,7 @@
     
     // Türkçe dil ayarı
     utterance.lang = 'tr-TR';
-    utterance.rate = options.rate || 0.9; // Konuşma hızı (0.1 - 10), mini dönüt için 1.2
+    utterance.rate = options.rate || 1.1; // Konuşma hızı (0.1 - 10), normal için 1.1 (daha hızlı)
     utterance.pitch = options.pitch || 1.2; // Ses tonu (0 - 2), kadın sesi için
     utterance.volume = options.volume || 0.8; // Ses seviyesi (0 - 1)
     

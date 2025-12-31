@@ -493,6 +493,7 @@
         
         <div class="final-actions">
           <button class="choice-btn final-btn" id="finalRestart">🔄 Yeniden Oyna</button>
+          <button class="choice-btn final-btn" id="finalSurvey">📝 Anket/Görüş</button>
           <button class="choice-btn final-btn" id="finalHome">🏠 Ana Sayfa</button>
         </div>
       </div>
@@ -518,6 +519,7 @@
     // Buton event'lerini ekle (DOM hazır olduktan sonra - daha uzun timeout)
     setTimeout(() => {
       const restartBtn = document.getElementById('finalRestart');
+      const surveyBtn = document.getElementById('finalSurvey');
       const homeBtn = document.getElementById('finalHome');
       
       
@@ -531,6 +533,17 @@
           if (window.GameEngine) {
             window.GameEngine.restart();
           }
+        };
+      }
+      
+      if (surveyBtn) {
+        surveyBtn.onclick = () => {
+          // Mevcut seslendirmeyi durdur
+          if (window.AudioManager && window.AudioManager.stopNarration) {
+            window.AudioManager.stopNarration();
+          }
+          if (window.AudioManager) window.AudioManager.playSound('click');
+          window.location.href = "survey.html";
         };
       }
       

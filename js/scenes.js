@@ -6,8 +6,9 @@ window.SCENES = [
       {
         id: "SP_START",
         season: "İlkbahar",
-        role: "balik",
+        role: "ari",
         text:
+          "Ben bir arıyım.\n" +
           "İlkbahar başlıyor. Doğa uyanıyor, hava ısınıyor.\n" +
           "Çiçekler açıyor, arılar ve diğer canlılar hareketleniyor.\n" +
           "Her şeyin başlangıcı gibi.\n" +
@@ -21,6 +22,7 @@ window.SCENES = [
         season: "Yaz",
         role: "balik",
         text:
+          "Ben bir balığım.\n" +
           "Yaz geldi. Güneş daha parlak, günler uzun.\n" +
           "Doğada hareket artıyor, insanlar ve hayvanlar suya yaklaşıyor.\n" +
           "Her şeyin daha hızlı olduğu bir dönem başlıyor.",
@@ -33,6 +35,7 @@ window.SCENES = [
         season: "Sonbahar",
         role: "agac",
         text:
+          "Ben bir ağacım.\n" +
           "Sonbahar başlıyor. Hava serinliyor, yağmurlar artıyor.\n" +
           "Yapraklar dökülüyor, doğa yavaşça dinlenmeye hazırlanıyor.\n" +
           "Her şeyin değiştiği bir dönem.\n" +
@@ -50,6 +53,7 @@ window.SCENES = [
           season: "Kış",
           role: "tilki",
           text:
+            "Ben bir tilkiyim.\n" +
             "Kış geldi.\n" +
             "Hava soğuk, günler kısa.\n" +
             "Bazı canlılar saklanıyor, bazıları yiyecek arıyor.\n" +
@@ -614,8 +618,8 @@ window.SCENES = [
 
       // --- Yaz Karar 4 ---
       { id: "su_07", season: "Yaz", role: "balik", text: "Sahilde tekne turları yapılmak isteniyor.\nBazıları sessiz ve düzenli turların daha iyi olacağını söylüyor.\nBazıları ise hareketli turların daha çok kişiye ulaşacağını düşünüyor.\nBir seçim yapılacak.", choices: [ { id: "A", label: "Sessiz ve sınırlı tekne turları olsun.", next: "su_07a", tags: ["koruma_onlemi", "maliyet_artti"] }, { id: "B", label: "Daha hareketli turlar olsun, herkes katılabilsin.", next: "su_07b", tags: ["gurultu_artti", "ekonomi_artti"] } ], autoNext: null },
-      { id: "su_07a", season: "Yaz", role: "balik", text: "Tekneler daha yavaş ve sakin ilerliyor.\nBazı insanlar bunun pahalı olabileceğini konuşuyor.\nBen uçarken kıyıda daha az karmaşa görüyorum.", choices: null, autoNext: "su_08" },
-      { id: "su_07b", season: "Yaz", role: "balik", text: "Kıyıda sesler arttı.\nDaha çok insan tekneye biniyor.\nBen uçarken bazı kuşların uzaklaştığını fark eder gibi oluyorum.", choices: null, autoNext: "su_08" },
+      { id: "su_07a", season: "Yaz", role: "balik", text: "Tekneler daha yavaş ve sakin ilerliyor.\nBazı insanlar bunun pahalı olabileceğini konuşuyor.\nBen yüzerken kıyıda daha az karmaşa görüyorum.", choices: null, autoNext: "su_08" },
+      { id: "su_07b", season: "Yaz", role: "balik", text: "Kıyıda sesler arttı.\nDaha çok insan tekneye biniyor.\nBen yüzerken bazı kuşların uzaklaştığını fark eder gibi oluyorum.", choices: null, autoNext: "su_08" },
       { id: "su_08", season: "Yaz", role: "balik", text: "Bir süre sonra kıyıdaki ses düzeni değişti.\nBazı yerler daha canlı, bazı yerler daha sessiz.\nKimin nerede yaşadığı, kimin nereden uzaklaştığı belli olmuyor…\nama ben bunu hissediyorum.", choices: null, autoNext: "su_09" },
 
       // --- Yaz Karar 5 ---
@@ -626,9 +630,9 @@ window.SCENES = [
   
   // --- YENİ YAZ SAHNELERİ ---
   // Y1 - Sahil Temizliği
-  { id: "yaz_01", season: "Yaz", role: "balik", text: "Sahilde kalabalık arttı.\nUçarken bazı çöpler gözüme çarpıyor.\nBazıları hızlıca toplamayı yeterli görüyor.\n\nNe yapılmalı?", choices: [ { id: "A", label: "Göze çarpan çöpleri toplamak", next: "yaz_01a", tags: ["kontrol_yok", "atık_artti"] }, { id: "B", label: "Tüm alan için düzenli bir temizlik planı yapmak", next: "yaz_01b", tags: ["kontrol_var", "koruma_onlemi"] } ], autoNext: null },
+  { id: "yaz_01", season: "Yaz", role: "balik", text: "Sahilde kalabalık arttı.\nYüzerken bazı çöpler gözüme çarpıyor.\nBazıları hızlıca toplamayı yeterli görüyor.\n\nNe yapılmalı?", choices: [ { id: "A", label: "Göze çarpan çöpleri toplamak", next: "yaz_01a", tags: ["kontrol_yok", "atık_artti"] }, { id: "B", label: "Tüm alan için düzenli bir temizlik planı yapmak", next: "yaz_01b", tags: ["kontrol_var", "koruma_onlemi"] } ], autoNext: null },
   { id: "yaz_01a", season: "Yaz", role: "balik", text: "Göze çarpan çöpler toplandı.\nAma bazı küçük parçalar hâlâ duruyor.\nRüzgâr estiğinde bazıları suya karışıyor.", choices: null, autoNext: "yaz_02" },
-  { id: "yaz_01b", season: "Yaz", role: "balik", text: "Düzenli bir temizlik planı yapıldı.\nAlan daha düzenli görünüyor.\nBen uçarken daha az çöp görüyorum.", choices: null, autoNext: "yaz_02" },
+  { id: "yaz_01b", season: "Yaz", role: "balik", text: "Düzenli bir temizlik planı yapıldı.\nAlan daha düzenli görünüyor.\nBen yüzerken daha az çöp görüyorum.", choices: null, autoNext: "yaz_02" },
   
   // Y2 - Piknik Sonrası
   { id: "yaz_02", season: "Yaz", role: "balik", text: "Piknik bittikten sonra yerde atıklar kalıyor.\nHerkes gitmek istiyor ama izler duruyor.\n\nNasıl toplanmalı?", choices: [ { id: "A", label: "Hızlıca toparlayıp en yakın kutuya atmak", next: "yaz_02a", tags: ["kontrol_yok", "atık_artti"] }, { id: "B", label: "Ayırarak geri dönüşüme uygun toplamak", next: "yaz_02b", tags: ["kontrol_var", "koruma_onlemi"] } ], autoNext: null },
@@ -725,7 +729,7 @@ window.SCENES = [
   // --- Yaz ---
   // --- ÖRNEK SET 2: Sahil ışıkları ---
   { id: "su_01", season: "Yaz", role: "balik", text: "Yaz geldi. Akşamları sahil kalabalık.\nİnsanlar yürürken kendini güvende hissetmek istiyor.\nBazıları ışıkların tüm gece açık kalmasını savunuyor.\nBazıları ise ışıkların bazı canlıları şaşırtabileceğini düşünüyor.", choices: [ { id: "A", label: "Işıklar bütün gece açık kalsın.", next: "su_01a", tags: ["guvenlik_artti", "isik_kirliligi"] }, { id: "B", label: "Işıklar belirli saatlerde azaltılsın.", next: "su_01b", tags: ["habitat_korundu", "erisimi_zorlasti"] } ], autoNext: null },
-  { id: "su_01a", season: "Yaz", role: "balik", text: "Gece olduğunda sahil daha aydınlık.\nİnsanlar yürürken daha rahat.\nBen ise ışıkların altında uçmayı deniyorum.", choices: null, autoNext: "su_02" },
+  { id: "su_01a", season: "Yaz", role: "balik", text: "Gece olduğunda sahil daha aydınlık.\nİnsanlar yürürken daha rahat.\nBen ise ışıkların altında yüzmeyi deniyorum.", choices: null, autoNext: "su_02" },
   { id: "su_01b", season: "Yaz", role: "balik", text: "Gece olduğunda ışıklar bir süre sonra azalıyor.\nBazı insanlar karanlığa alışmaya çalışıyor.\nBen de daha loş yerlerde yönümü buluyorum.", choices: null, autoNext: "su_02" },
   { id: "su_02", season: "Yaz", role: "balik", text: "Bir iki gün geçti.\nBazı canlılar eskisi kadar görünmüyor gibi.\nSahil hâlâ güzel…\nama gecenin havası biraz değişmiş.", choices: null, autoNext: "su_03" },
 

@@ -102,12 +102,12 @@
       feedback.classList.add('show');
     }, 100);
 
-    // Dönüt metnini seslendir (daha hızlı)
+    // Dönüt metnini seslendir (normal hızda)
     let narrationComplete = false;
     if (window.AudioManager && window.AudioManager.playNarration && narrationText) {
       setTimeout(() => {
         window.AudioManager.playNarration(null, narrationText, { 
-          rate: 1.3, // Daha hızlı okuma
+          rate: 1.1, // Normal okuma hızı (1.3'ten düşürüldü)
           isFeedback: true // Mini dönüt olduğunu belirt (ses kesilmesin)
         });
         
@@ -124,7 +124,7 @@
     }
 
     // Seslendirme süresini hesapla (metin uzunluğuna göre)
-    const estimatedDuration = narrationText ? (narrationText.length * 50) / 1.3 : 2000; // 1.3x hız için süre hesaplama
+    const estimatedDuration = narrationText ? (narrationText.length * 50) / 1.1 : 2000; // 1.1x hız için süre hesaplama
     const displayDuration = Math.max(estimatedDuration + 300, 2500); // Minimum 2.5 saniye
 
     // Otomatik kapanma (seslendirme bitene kadar bekle)
