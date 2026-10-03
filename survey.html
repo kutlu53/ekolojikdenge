@@ -191,6 +191,90 @@
             display: block;
         }
         
+        /* Oyunla aynı masal kitabı görünümü */
+        .survey-container {
+            background: var(--paper);
+            border: 4px solid #fff;
+            border-radius: 32px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .survey-header h1,
+        .question-number,
+        .submit-btn {
+            font-family: var(--font-title);
+            font-weight: 800;
+        }
+
+        .question-group {
+            background: #fff;
+            border: 2px solid var(--paper-edge);
+            border-left: 8px solid var(--green);
+            border-radius: 20px;
+        }
+
+        .question-text {
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        .option-label {
+            border-radius: 16px;
+            border-width: 3px;
+            font-weight: 800;
+        }
+
+        .option-label:has(input:checked) {
+            border-color: var(--green);
+            background: #E3F7E0;
+            transform: scale(1.03);
+        }
+
+        /* Seçeneklerde yüz ifadeleri */
+        .option-label input[value="katiliyorum"] + span::before { content: '😊 '; }
+        .option-label input[value="ksmen"] + span::before { content: '😐 '; }
+        .option-label input[value="katilmiyorum"] + span::before { content: '🙁 '; }
+
+        .option-label span {
+            flex: 1;
+            text-align: center;
+        }
+
+        .option-label span::before {
+            display: block;
+            font-size: 1.9em;
+            line-height: 1.2;
+        }
+
+        .text-question textarea {
+            font-family: var(--font-body);
+            font-weight: 700;
+            border-radius: 16px;
+            border-width: 3px;
+        }
+
+        .submit-btn {
+            border: 4px solid #fff;
+            background: var(--green);
+            box-shadow: 0 7px 0 var(--green-dark), 0 14px 22px rgba(59, 42, 26, 0.25);
+            font-size: 1.4em;
+        }
+
+        .submit-btn:hover {
+            box-shadow: 0 9px 0 var(--green-dark), 0 16px 24px rgba(59, 42, 26, 0.28);
+        }
+
+        .submit-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 var(--green-dark);
+        }
+
+        .back-btn {
+            margin: 20px 6px 0;
+            border-radius: 999px;
+            font-weight: 800;
+        }
+
         @media (max-width: 768px) {
             .survey-container {
                 padding: 20px;
@@ -364,7 +448,7 @@
             <!-- Soru 8 -->
             <div class="question-group">
                 <div class="question-number">8.</div>
-                <div class="question-text">Oyunda kendimi bir canlı (arı veya ağaç) gibi hissettiğim anlar oldu.</div>
+                <div class="question-text">Oyunda kendimi bir canlı (arı, balık, ağaç veya tilki) gibi hissettiğim anlar oldu.</div>
                 <div class="options-group">
                     <label class="option-label">
                         <input type="radio" name="q8" value="katiliyorum" required>
@@ -476,6 +560,7 @@
                     ✅ Anketiniz başarıyla gönderildi! Teşekkür ederiz.
                 </div>
                 <a href="game.html" class="back-btn">← Oyun Sayfasına Dön</a>
+                <a href="#" class="back-btn" id="exportBtn">📥 Yanıtları İndir (Öğretmen)</a>
             </div>
         </form>
     </div>
@@ -520,6 +605,54 @@
                 console.error('Anket kaydedilemedi:', error);
                 alert('Anket kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.');
             }
+        });
+
+        // Bu tarayıcıda kayıtlı tüm anket yanıtlarını CSV olarak indir
+        document.getElementById('exportBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            let surveys = [];
+            try {
+                surveys = JSON.parse(localStorage.getItem('surveyResponses') || '[]');
+            } catch (error) {
+                console.error('Anket yanıtları okunamadı:', error);
+            }
+
+            if (surveys.length === 0) {
+                alert('Bu bilgisayarda kayıtlı anket yanıtı yok.');
+                return;
+            }
+
+            const labels = {
+                katiliyorum: 'Katılıyorum',
+                ksmen: 'Kısmen Katılıyorum',
+                katilmiyorum: 'Katılmıyorum'
+            };
+            const cell = (value) => '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+
+            const header = ['Sıra', 'Tarih'];
+            for (let i = 1; i <= 13; i++) header.push('Soru ' + i);
+
+            const rows = [header.map(cell).join(';')];
+            surveys.forEach((survey, index) => {
+                const answers = survey.answers || {};
+                const row = [index + 1, survey.timestamp];
+                for (let i = 1; i <= 12; i++) {
+                    row.push(labels[answers['q' + i]] || answers['q' + i] || '');
+                }
+                row.push(answers['q13'] || '');
+                rows.push(row.map(cell).join(';'));
+            });
+
+            // BOM: Excel'in Türkçe karakterleri doğru açması için
+            const blob = new Blob(['﻿' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'anket-yanitlari.csv';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
         });
     </script>
 </body>

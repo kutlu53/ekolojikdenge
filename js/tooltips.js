@@ -20,8 +20,8 @@
       content: "Havanın temizliği ve iklim koşullarıdır. Temiz hava, tüm canlıların sağlığı için çok önemlidir."
     },
     insan: {
-      title: "İnsan Etkisi",
-      content: "İnsanların doğaya olan etkisidir. Bu etki hem olumlu hem olumsuz olabilir. Dengeli bir yaklaşım önemlidir."
+      title: "İnsan Mutluluğu",
+      content: "İnsanların ne kadar rahat ve mutlu olduğudur. Mutsuz insanlar kurallara uymakta zorlanır; denge için insanlar da düşünülmelidir."
     }
   };
 

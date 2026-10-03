@@ -2,49 +2,35 @@
 (function() {
   'use strict';
 
+  // Yıl sonu rozetleri yalnızca final sahnesine ulaşıldığında değerlendirilir
+  function yearFinished(state) {
+    return typeof state.currentSceneId === 'string' && state.currentSceneId.startsWith('final_');
+  }
+
+  const NATURE = ['biyo', 'su', 'toprak', 'hava'];
+  const isGood = (level) => level === 'Mükemmel' || level === 'İyi';
+
   const ACHIEVEMENTS = {
     balanced_year: {
       id: 'balanced_year',
-      name: 'Dengeli Yıl',
-      description: 'Tüm parametreler mükemmel veya iyi kaldı',
+      name: 'Denge Ustası',
+      description: 'Yıl sonunda hem doğa hem insanlar mutlu',
       icon: '⚖️',
-      condition: (state) => {
-        const levels = ['biyo', 'su', 'toprak', 'hava'].map(key => {
-          const level = state.indicators[key];
-          return level === 'Mükemmel' || level === 'İyi';
-        });
-        return levels.every(v => v);
-      }
+      condition: (state) => state.currentSceneId === 'final_perfect'
     },
     nature_friend: {
       id: 'nature_friend',
       name: 'Doğa Dostu',
-      description: '5 koruma önlemi seçildi',
+      description: 'Yıl sonunda su, toprak, hava ve canlılar iyi durumda',
       icon: '🌿',
-      condition: (state) => {
-        return state.flags.filter(f => f === 'koruma_onlemi').length >= 5;
-      }
+      condition: (state) => yearFinished(state) && NATURE.every(key => isGood(state.indicators[key]))
     },
-    aware_player: {
-      id: 'aware_player',
-      name: 'Farkındalık',
-      description: 'Tüm parametreler hakkında bilgi alındı',
-      icon: '💡',
-      condition: (state) => {
-        return state.infoViewed && state.infoViewed.length >= 5;
-      }
-    },
-    perfect_balance: {
-      id: 'perfect_balance',
-      name: 'Mükemmel Denge',
-      description: 'Hiçbir parametre kritik seviyeye gelmedi',
-      icon: '✨',
-      condition: (state) => {
-        const levels = ['biyo', 'su', 'toprak', 'hava'].map(key => 
-          state.indicators[key] !== 'Kritik'
-        );
-        return levels.every(v => v);
-      }
+    creature_friend: {
+      id: 'creature_friend',
+      name: 'Can Dostu',
+      description: 'Arı, balık, ağaç ve tilki yılı üzülmeden geçirdi',
+      icon: '💗',
+      condition: (state) => yearFinished(state) && Object.values(state.can).every(value => value >= 2)
     },
     explorer: {
       id: 'explorer',
@@ -52,7 +38,7 @@
       description: 'Tüm mevsimler tamamlandı',
       icon: '🗺️',
       condition: (state) => {
-        return state.seasonsCompleted && state.seasonsCompleted.length >= 4;
+        return yearFinished(state);
       }
     }
   };

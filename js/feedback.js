@@ -75,7 +75,8 @@
     const effectItems = [];
     
     Object.values(groupedEffects).forEach((effect, index) => {
-      const icon = effect.delta < 0 ? '✅' : '⚠️';
+      const art = window.GameArt;
+      const icon = effect.delta < 0 ? (art ? art.icon('up') : '✅') : (art ? art.icon('down') : '⚠️');
       const text = `${effect.indicator} ${effect.delta < 0 ? 'iyileşiyor' : 'zorlanıyor'}`;
       effectItems.push({
         icon,
@@ -89,7 +90,7 @@
 
     // Tüm etkileri tek bir listede göster
     effectItems.forEach((item, index) => {
-      feedbackHTML += `<div class="feedback-item ${item.isPositive ? 'positive' : 'negative'}">${item.icon} ${item.text}</div>`;
+      feedbackHTML += `<div class="feedback-item ${item.isPositive ? 'positive' : 'negative'}">${item.icon}<span>${item.text}</span></div>`;
     });
 
     feedbackHTML += '</div>';

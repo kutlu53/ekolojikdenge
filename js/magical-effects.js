@@ -1,60 +1,10 @@
-// Masalsı Efektler - Peri Tozları ve Yıldızlar
+// Masalsı Efektler - Yıldız Patlaması, Konfeti ve Parıltılar
 (function() {
   'use strict';
 
-  let sparkleContainer = null;
+  const COLORS = ['#FFC93C', '#FF8A3D', '#3E9BE9', '#43A85B', '#EC5F99', '#8E6BD9'];
 
-  // Peri tozları container'ı oluştur
-  function createSparkleContainer() {
-    if (sparkleContainer) {
-      sparkleContainer.remove();
-    }
-    sparkleContainer = document.createElement('div');
-    sparkleContainer.className = 'sparkle-container';
-    sparkleContainer.id = 'sparkleContainer';
-    document.body.appendChild(sparkleContainer);
-  }
-
-  // Peri tozları oluştur (sürekli)
-  function createSparkles() {
-    createSparkleContainer();
-    
-    for (let i = 0; i < 20; i++) {
-      setTimeout(() => {
-        createSparkle();
-      }, i * 300);
-    }
-    
-    // Sürekli yeni peri tozları ekle
-    setInterval(() => {
-      if (sparkleContainer && sparkleContainer.parentNode) {
-        createSparkle();
-      }
-    }, 2000);
-  }
-
-  // Tek bir peri tozu oluştur
-  function createSparkle() {
-    if (!sparkleContainer) return;
-    
-    const sparkle = document.createElement('div');
-    sparkle.className = 'sparkle';
-    sparkle.textContent = ['✨', '⭐', '💫', '🌟'][Math.floor(Math.random() * 4)];
-    sparkle.style.left = Math.random() * 100 + '%';
-    sparkle.style.top = Math.random() * 100 + '%';
-    sparkle.style.animationDelay = Math.random() * 2 + 's';
-    sparkle.style.animationDuration = (Math.random() * 3 + 4) + 's';
-    sparkle.style.fontSize = (Math.random() * 8 + 12) + 'px';
-    sparkle.style.opacity = Math.random() * 0.6 + 0.4;
-    sparkleContainer.appendChild(sparkle);
-    
-    // Animasyon bitince kaldır
-    setTimeout(() => {
-      if (sparkle.parentNode) {
-        sparkle.remove();
-      }
-    }, 8000);
-  }
+  const pick = (list) => list[Math.floor(Math.random() * list.length)];
 
   // Yıldız patlaması efekti (karar verildiğinde)
   function createStarBurst(x, y) {
@@ -63,55 +13,61 @@
     burst.style.left = x + 'px';
     burst.style.top = y + 'px';
     document.body.appendChild(burst);
-    
-    for (let i = 0; i < 12; i++) {
+
+    const count = 16;
+    for (let i = 0; i < count; i++) {
       const star = document.createElement('div');
-      star.className = 'burst-star';
-      star.textContent = ['⭐', '✨', '💫'][Math.floor(Math.random() * 3)];
-      const angle = (i * 30) * Math.PI / 180;
-      const distance = 80;
-      const tx = Math.cos(angle) * distance;
-      const ty = Math.sin(angle) * distance;
-      star.style.setProperty('--tx', tx + 'px');
-      star.style.setProperty('--ty', ty + 'px');
-      star.style.left = '0px';
-      star.style.top = '0px';
-      star.style.animationDelay = (i * 0.05) + 's';
+      star.className = i % 2 === 0 ? 'burst-star' : 'burst-star dot';
+      const angle = (i * (360 / count)) * Math.PI / 180;
+      const distance = 70 + Math.random() * 60;
+      star.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+      star.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+      star.style.setProperty('--c', pick(COLORS));
+      star.style.animationDelay = (Math.random() * 0.08) + 's';
       burst.appendChild(star);
     }
-    
+
     setTimeout(() => {
       burst.remove();
-    }, 1500);
+    }, 1300);
   }
 
-  // Başarı rozeti için peri tozları
+  // Konfeti yağmuru (yıl sonu ve rozetler)
+  function createConfetti(count) {
+    const total = count || 90;
+    for (let i = 0; i < total; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.setProperty('--c', pick(COLORS));
+      piece.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px');
+      piece.style.setProperty('--rot', (Math.random() * 1080 + 360) + 'deg');
+      const duration = Math.random() * 2 + 2.6;
+      piece.style.animationDuration = duration + 's';
+      piece.style.animationDelay = (Math.random() * 1.2) + 's';
+      if (i % 3 === 0) {
+        piece.style.borderRadius = '50%';
+        piece.style.height = '11px';
+      }
+      document.body.appendChild(piece);
+
+      setTimeout(() => piece.remove(), (duration + 1.4) * 1000);
+    }
+  }
+
+  // Başarı rozeti için yıldızlar
   function createAchievementSparkles(element) {
     if (!element) return;
-    
+
     const rect = element.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    for (let i = 0; i < 15; i++) {
-      setTimeout(() => {
-        const sparkle = document.createElement('div');
-        sparkle.className = 'achievement-sparkle';
-        sparkle.textContent = '✨';
-        sparkle.style.left = centerX + (Math.random() * 100 - 50) + 'px';
-        sparkle.style.top = centerY + (Math.random() * 100 - 50) + 'px';
-        sparkle.style.fontSize = (Math.random() * 10 + 15) + 'px';
-        document.body.appendChild(sparkle);
-        
-        setTimeout(() => sparkle.remove(), 2000);
-      }, i * 50);
-    }
+    createStarBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    createConfetti(40);
   }
 
   // Parametre iyileştiğinde yeşil parıltı
   function createPositiveGlow(element) {
     if (!element) return;
-    
+
     const glow = document.createElement('div');
     glow.className = 'positive-glow';
     const rect = element.getBoundingClientRect();
@@ -120,22 +76,20 @@
     glow.style.width = rect.width + 'px';
     glow.style.height = rect.height + 'px';
     document.body.appendChild(glow);
-    
+
     setTimeout(() => glow.remove(), 1000);
   }
 
-  // Başlat
-  function init() {
-    createSparkles();
-  }
+  // Başlat (sürekli efektler mevsim animasyonlarına taşındı)
+  function init() {}
 
   // Global API
   window.MagicalEffects = {
     init,
     starBurst: createStarBurst,
+    confetti: createConfetti,
     achievementSparkles: createAchievementSparkles,
     positiveGlow: createPositiveGlow
   };
 
 })();
-

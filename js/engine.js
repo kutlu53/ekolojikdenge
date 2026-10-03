@@ -2,54 +2,31 @@
   // Sabitler - 5 kademeli sistem
   const LEVELS = ["Mükemmel", "İyi", "Orta", "Zayıf", "Kritik"];
   const INDICATOR_KEYS = ["biyo", "su", "toprak", "hava", "insan"];
+  const NATURE_KEYS = ["biyo", "su", "toprak", "hava"];
   const INDICATOR_LABELS = {
     biyo: "Canlı Çeşitliliği",
     su: "Su Dengesi",
     toprak: "Toprak Sağlığı",
     hava: "Hava/İklim",
-    insan: "İnsan Etkisi"
+    insan: "İnsan Mutluluğu"
   };
 
-  // Kural tablosu: etiket -> [{ indicator: "key", delta: number, delay: number }]
-  // Indicator keys: "biyo", "su", "toprak", "hava", "insan"
-  const RULES = {
-    // Su Dengesi
-    "su_azaldi": [ { indicator: "su", delta: +1, delay: 2 } ],
-    "atık_artti": [ { indicator: "su", delta: +1, delay: 2 } ],
-    "koruma_onlemi": [ { indicator: "su", delta: -1, delay: 3 } ],
-    // Toprak Sağlığı
-    "toprak_sikisti": [ { indicator: "toprak", delta: +1, delay: 2 } ],
-    "kimyasal_artti": [ { indicator: "toprak", delta: +1, delay: 2 } ],
-    "yerel_biyo_destek": [ { indicator: "toprak", delta: -1, delay: 3 }, { indicator: "biyo", delta: -1, delay: 2 } ],
-    // Canlı Çeşitliliği
-    "habitat_daraldi": [ { indicator: "biyo", delta: +1, delay: 1 } ],
-    "isik_kirliligi": [ { indicator: "biyo", delta: +1, delay: 1 } ],
-    "habitat_korundu": [ { indicator: "biyo", delta: -1, delay: 2 } ],
-    // Hava / İklim
-    "hava_kirliligi": [ { indicator: "hava", delta: +1, delay: 1 } ],
-    "odun_kesimi": [ { indicator: "hava", delta: +1, delay: 2 }, { indicator: "biyo", delta: +1, delay: 3 } ],
-    "alternatif_yakit": [ { indicator: "hava", delta: -1, delay: 2 } ],
-    // İnsan Etkisi (daha dengeli gecikmeler - insan etkisi zamanla birikir)
-    // İnsan Etkisi: İnsanların doğaya olan etkisini gösterir
-    // +1 = İnsan etkisi arttı (daha fazla müdahale, daha az kontrol, daha fazla kalabalık)
-    // -1 = İnsan etkisi azaldı (koruma önlemleri, kontrol, sınırlamalar)
-    "konfor_artti": [ { indicator: "insan", delta: +1, delay: 2 } ], // Konfor arttı -> Daha fazla insan etkisi (mantıklı)
-    "guvenlik_artti": [ { indicator: "insan", delta: +1, delay: 2 } ], // Güvenlik arttı -> Daha fazla insan etkisi (mantıklı - altyapı artışı)
-    "erisimi_zorlasti": [ { indicator: "insan", delta: -1, delay: 2 } ], // Erişim zorlaştı -> İnsan etkisi AZALIR (daha az insan erişebilir)
-    "maliyet_artti": [ { indicator: "insan", delta: +1, delay: 1 } ], // Maliyet arttı -> İnsan etkisi artabilir (kaynak kullanımı)
-    "emek_artti": [ { indicator: "insan", delta: -1, delay: 2 } ], // Emek arttı -> İnsan etkisi AZALIR (koruma için çaba gösterildi)
-    "ekonomi_artti": [ { indicator: "insan", delta: +1, delay: 2 } ], // Ekonomi arttı -> İnsan etkisi ARTAR (daha fazla aktivite)
-    "kalabalik_artti": [ { indicator: "insan", delta: +1, delay: 1 } ], // Kalabalık arttı -> İnsan etkisi artar (mantıklı)
-    "turizm_sinirlandi": [ { indicator: "insan", delta: -1, delay: 2 } ], // Turizm sınırlandı -> İnsan etkisi azalır (mantıklı)
-    "turizm_serbest": [ { indicator: "insan", delta: +1, delay: 1 } ], // Turizm serbest -> İnsan etkisi artar (mantıklı)
-    "gurultu_artti": [ { indicator: "biyo", delta: +1, delay: 1 } ], // Gürültü arttı -> Canlı çeşitliliği etkilenir (insan etkisi değil)
-    "kontrol_var": [ { indicator: "insan", delta: -1, delay: 2 } ], // Kontrol var -> İnsan etkisi azalır (mantıklı)
-    "kontrol_yok": [ { indicator: "insan", delta: +1, delay: 1 } ], // Kontrol yok -> İnsan etkisi artar (mantıklı)
-    // Dere yatağı düzenlemeleri
-    "dere_yatagi_daraldi": [ { indicator: "su", delta: +1, delay: 1 }, { indicator: "biyo", delta: +1, delay: 2 } ], // Dere daraltıldı -> Su dengesi ve canlı çeşitliliği etkilenir
-    "dere_yatagi_dogal": [ { indicator: "su", delta: -1, delay: 2 }, { indicator: "biyo", delta: -1, delay: 1 } ], // Dere doğal -> Su dengesi ve canlı çeşitliliği iyileşir
-    // Yol yapımı
-    "yol_betonlasti": [ { indicator: "toprak", delta: +1, delay: 1 }, { indicator: "su", delta: +1, delay: 2 } ] // Yol betonlandı -> Toprak sıkışır, su dengesi etkilenir
+  // Her canlının kendi ihtiyacı (kalpler): 0-3
+  const CAN_MAX = 3;
+  const CAN_START = 2;
+  const CAN_LABELS = {
+    ari: "Nektarım",
+    balik: "Temiz suyum",
+    agac: "Köklerim",
+    tilki: "Yuvam"
+  };
+
+  // İnsanlar mutsuzsa kurallara uymaz: bu sahnelerden önce kontrol edilir
+  const MOOD_EVENTS = {
+    "yaz_01": { metin: "İnsanlar bu aralar mutsuz. “Hep yasak, hep yasak!” diyorlar. Bazıları kuralları dinlemeyip dereye çöp attı.", etki: { su: -1 } },
+    "sonbahar_01": { metin: "İnsanlar bu aralar mutsuz. Bazıları kızıp işaretleri söktü, çiçekli alanların üstünden yürüdü.", etki: { biyo: -1 } },
+    "kis_01": { metin: "İnsanlar bu aralar mutsuz. Kimse gönüllü işlere gelmek istemedi; bahçeler ve toprak bakımsız kaldı.", etki: { toprak: -1 } },
+    "FINAL_PICK": { metin: "İnsanlar bu aralar mutsuz. “Bize ne!” deyip bahçe atıklarını yine yaktılar.", etki: { hava: -1 } }
   };
 
   // Event (Gözlem Notu) kuralları
@@ -62,37 +39,20 @@
   const EVENT_RULES = [
     {
       id: "sel_riski",
-      condition: (state) => getIndicatorLevel(state, "toprak") >= 3 && getIndicatorLevel(state, "su") >= 2,
-      note: "Son yağışlardan sonra bazı alanlarda su birikmeleri gözlemlendi."
+      condition: (state) => getIndicatorLevel(state, "toprak") >= 3 && getIndicatorLevel(state, "su") >= 3,
+      note: "Son yağışlardan sonra bazı yerlerde su birikintileri görüldü."
     },
     {
       id: "kuslar_azaldi",
       condition: (state) => getIndicatorLevel(state, "biyo") >= 3,
-      note: "Bazı kuş türlerinin bu alanda daha az görüldüğü fark edildi."
+      note: "Bazı kuşlar bu yıl buralarda daha az görülüyor."
     },
     {
       id: "hava_agir",
       condition: (state) => getIndicatorLevel(state, "hava") >= 3,
-      note: "Soğuk havada dumanın daha uzun süre kaldığı gözlemlendi."
+      note: "Hava bugünlerde ağır; duman uzun süre dağılmıyor."
     }
   ];
-  
-  
-    // Gösterge seviyeleri: 0 = Dengeli, 1 = Zorlanan, 2 = Hassas
-  
-    // Final sahnesi seçimi
-    function pickFinalSceneId(state) {
-      const hassas = [
-        state.water,
-        state.soil,
-        state.biodiversity,
-        state.air
-      ].filter(v => v >= 2).length;
-      if (hassas >= 3) return "final_4"; // ciddi dengesizlik
-      if (hassas === 2) return "final_3";
-      if (hassas === 1) return "final_2";
-      return "final_1"; // dengeli yıl
-    }
 
   let state = null;
   let listeners = [];
@@ -101,21 +61,24 @@
   function getDefaultState() {
     return {
       currentSceneId: "SP_START",
+      // Her şey "Orta" başlar: hem iyileşme hem kötüleşme görülebilir
       indicators: {
-        biyo: "Mükemmel",
-        su: "Mükemmel",
-        toprak: "Mükemmel",
-        hava: "Mükemmel",
-        insan: "Mükemmel"
+        biyo: "Orta",
+        su: "Orta",
+        toprak: "Orta",
+        hava: "Orta",
+        insan: "Orta"
       },
-      flags: [],
-      pending: [], // { applyAfterSteps, impact: {gösterge: delta} }
+      can: { ari: CAN_START, balik: CAN_START, agac: CAN_START, tilki: CAN_START },
+      echoes: [],   // ileride ortaya çıkacak sonuçlar: { before, season, label, text, etki }
+      dynamic: {},  // oyun sırasında oluşturulan "hatırlıyor musun" sahneleri
       events: [],
       observation: ""
     };
   }
 
   function getScene(id) {
+    if (state && state.dynamic[id]) return state.dynamic[id];
     return (window.SCENES || []).find(s => s.id === id) || null;
   }
 
@@ -127,25 +90,28 @@
     listeners.forEach(fn => fn(state));
   }
 
+  // delta: +1 = bir seviye iyileşir, -1 = bir seviye kötüleşir
   function applyImpact(key, delta) {
-    const current = state.indicators[key];
-    let idx = LEVELS.indexOf(current);
-    if (delta > 0 && idx < LEVELS.length - 1) idx++;
-    if (delta < 0 && idx > 0) idx--;
+    let idx = LEVELS.indexOf(state.indicators[key]);
+    idx = Math.max(0, Math.min(LEVELS.length - 1, idx - delta));
     state.indicators[key] = LEVELS[idx];
+  }
+
+  function applyEffects(etki, role) {
+    if (!etki) return;
+    for (const key in etki) {
+      if (key === "can") {
+        if (role in state.can) {
+          state.can[role] = Math.max(0, Math.min(CAN_MAX, state.can[role] + etki[key]));
+        }
+      } else if (key in state.indicators) {
+        applyImpact(key, etki[key]);
+      }
+    }
   }
 
   function step() {
     stepCount++;
-    // Pending etkileri güncelle
-    state.pending.forEach(p => p.applyAfterSteps--);
-    const toApply = state.pending.filter(p => p.applyAfterSteps <= 0);
-    state.pending = state.pending.filter(p => p.applyAfterSteps > 0);
-    toApply.forEach(p => {
-      for (const key in p.impact) {
-        applyImpact(key, p.impact[key]);
-      }
-    });
     // Event kontrolü
     checkEvents();
     // Başarı kontrolü
@@ -154,21 +120,36 @@
     }
   }
 
-  function addPendingFromTags(tags) {
-    if (!tags) return;
-    tags.forEach(tag => {
-      // flags birikimi
-      state.flags.push(tag);
-      // RULES tablosundan pending etkileri ekle
-      if (RULES[tag]) {
-        RULES[tag].forEach(rule => {
-          state.pending.push({
-            applyAfterSteps: rule.delay,
-            impact: { [rule.indicator]: rule.delta }
-          });
-        });
-      }
-    });
+  // Bir sahneye geç. O sahneden önce ortaya çıkması gereken sonuçlar varsa
+  // önce "hatırlıyor musun" sahnesi gösterilir ve etkiler o anda uygulanır.
+  function goTo(id) {
+    const target = getScene(id);
+    const items = state.echoes.filter(e => e.before === id);
+    state.echoes = state.echoes.filter(e => e.before !== id);
+
+    if (MOOD_EVENTS[id] && getIndicatorLevel(state, "insan") >= 3) {
+      items.push({ mood: true, text: MOOD_EVENTS[id].metin, etki: MOOD_EVENTS[id].etki });
+    }
+
+    if (!target || items.length === 0) {
+      state.currentSceneId = id;
+      return;
+    }
+
+    items.forEach(item => applyEffects(item.etki, target.role));
+
+    const echoScene = {
+      id: "echo_" + id,
+      season: target.season,
+      role: target.role,
+      isEcho: true,
+      items: items,
+      text: items.map(item => item.text).join("\n"),
+      choices: null,
+      autoNext: id
+    };
+    state.dynamic[echoScene.id] = echoScene;
+    state.currentSceneId = echoScene.id;
   }
 
   function choose(choiceId) {
@@ -176,23 +157,25 @@
     if (!scene || !scene.choices) return;
     const choice = scene.choices.find(c => c.id === choiceId);
     if (!choice) return;
-    addPendingFromTags(choice.tags);
+
+    // Hemen görülen etkiler
+    applyEffects(choice.simdi, scene.role);
+
+    // İleride ortaya çıkacak sonuç
+    if (choice.sonra) {
+      state.echoes.push({
+        before: choice.sonra.once,
+        season: scene.season,
+        label: choice.label,
+        text: choice.sonra.metin,
+        etki: choice.sonra.etki
+      });
+    }
+
     // Sahne geçişi
-    state.currentSceneId = choice.next;
+    goTo(choice.next);
     step();
     notify();
-  }
-
-  function next() {
-    const scene = getScene(state.currentSceneId);
-    if (!scene || !scene.autoNext) return;
-    state.currentSceneId = scene.autoNext;
-    step();
-    notify();
-  }
-
-  function flagsCount(tag) {
-    return state.flags.filter(f => f === tag).length;
   }
 
   function checkEvents() {
@@ -206,68 +189,62 @@
     if (!state.events.length) state.observation = "";
   }
 
-  // Final sahnesi seçimi (genişletilmiş) - 5 kademeli sistem
-  function pickFinalSceneId(state) {
-    const kritik = [
-      getIndicatorLevel(state, "su"),
-      getIndicatorLevel(state, "toprak"),
-      getIndicatorLevel(state, "biyo"),
-      getIndicatorLevel(state, "hava")
-    ].filter(v => v >= 4).length; // Kritik seviye (4)
-    
-    const zayif = [
-      getIndicatorLevel(state, "su"),
-      getIndicatorLevel(state, "toprak"),
-      getIndicatorLevel(state, "biyo"),
-      getIndicatorLevel(state, "hava")
-    ].filter(v => v >= 3).length; // Zayıf ve üzeri (3+)
-    
-    const mükemmel = [
-      getIndicatorLevel(state, "su"),
-      getIndicatorLevel(state, "toprak"),
-      getIndicatorLevel(state, "biyo"),
-      getIndicatorLevel(state, "hava")
-    ].filter(v => v === 0).length; // Mükemmel seviye (0)
-    
-    const korumaSayisi = state.flags.filter(f => f === 'koruma_onlemi').length;
-    
-    // Özel durumlar
-    if (mükemmel === 4 && korumaSayisi >= 5) return "final_perfect"; // Mükemmel denge
-    if (kritik >= 3) return "final_4"; // Ciddi dengesizlik
-    if (zayif >= 3) return "final_3"; // Orta dengesizlik
-    if (zayif >= 2) return "final_2"; // Hafif dengesizlik
-    if (mükemmel >= 3) return "final_1_good"; // İyi denge
-    return "final_1"; // Dengeli yıl
+  // Yıldız sayısı (Mükemmel=5 ... Kritik=1)
+  function stars(state, key) {
+    return 5 - getIndicatorLevel(state, key);
   }
 
+  // Final sahnesi seçimi: hem doğa hem insanlar değerlendirilir
+  function pickFinalSceneId(state) {
+    const nature = NATURE_KEYS.map(key => stars(state, key));
+    const natureMin = Math.min(...nature);
+    const natureAvg = nature.reduce((a, b) => a + b, 0) / nature.length;
+    const people = stars(state, "insan");
+
+    if (natureAvg >= 4 && natureMin >= 3 && people >= 4) return "final_perfect"; // Denge: doğa da insanlar da iyi
+    if (natureAvg >= 3.5 && people <= 2) return "final_kuskun"; // Doğa iyi, insanlar küskün
+    if (natureAvg >= 3.5) return "final_1_good";                // Doğa iyi
+    if (natureAvg >= 2.5) return "final_2";                     // Ortada
+    if (people >= 3) return "final_4";                          // İnsanlar rahat, doğa yorgun
+    return "final_3";                                           // İkisi de zorlandı
+  }
+
+  // Her "Devam" tek sahne ilerletir
   function next() {
-    let scene = getScene(state.currentSceneId);
+    const scene = getScene(state.currentSceneId);
     if (!scene) return;
-    while (true) {
-      // FINAL_PICK sahnesindeyse otomatik finale geç
-      if (scene.id === "FINAL_PICK") {
-        const finalId = pickFinalSceneId(state);
-        state.currentSceneId = finalId;
-        step();
-        notify();
-        return;
-      }
-      if (scene.autoNext) {
-        state.currentSceneId = scene.autoNext;
-        step();
-        notify();
-        scene = getScene(state.currentSceneId);
-        // Devam et, zincirli autoNext'leri göster
-        continue;
-      }
-      break;
+    if (scene.id === "FINAL_PICK") {
+      // FINAL_PICK sahnesindeyse finale geç
+      state.currentSceneId = pickFinalSceneId(state);
+    } else if (scene.isEcho) {
+      // Sonuçlar gösterildi; asıl sahneye devam et
+      state.currentSceneId = scene.autoNext;
+    } else if (scene.autoNext) {
+      goTo(scene.autoNext);
+    } else {
+      return;
     }
+    step();
     notify();
   }
+
+  // Mini oyun bitti: iyi oynandıysa (2-3 yıldız) canlı bir kalp kazanır
+  function finishMinigame(stars) {
+    const scene = getScene(state.currentSceneId);
+    if (!scene || !scene.minigame) return;
+    if (stars >= 2) {
+      applyEffects({ can: +1 }, scene.role);
+    }
+    next();
+  }
+
   function init() {
     state = getDefaultState();
     stepCount = 0;
-    listeners = [];
+    // Yeni oyun: önceki oyunun karar geçmişi yıl sonu raporuna karışmasın
+    if (window.DecisionHistory) {
+      window.DecisionHistory.clear();
+    }
   }
 
   function restart() {
@@ -280,13 +257,16 @@
     getScene,
     choose,
     next,
+    finishMinigame,
     restart,
     subscribe,
     getState: () => state,
     LEVELS,
     INDICATOR_KEYS,
+    NATURE_KEYS,
     INDICATOR_LABELS,
-    pickFinalSceneId,
-    RULES // Feedback sistemi için dışa aktar
+    CAN_MAX,
+    CAN_LABELS,
+    pickFinalSceneId
   };
 })();

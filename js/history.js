@@ -15,7 +15,9 @@
         id: choice.id,
         label: choice.label
       },
-      tags: choice.tags || [], // Tags bilgisini sakla
+      role: scene.role,
+      simdi: choice.simdi || null, // Hemen görülen etkiler
+      sonra: choice.sonra || null, // İleride ortaya çıkan sonuç
       indicators: { ...state.indicators },
       timestamp: new Date().toISOString()
     };

@@ -4,6 +4,8 @@
 
   let animationContainer = null;
 
+  const rand = (min, max) => Math.random() * (max - min) + min;
+
   // Animasyon container'ı oluştur
   function createAnimationContainer() {
     if (animationContainer) {
@@ -12,111 +14,117 @@
     animationContainer = document.createElement('div');
     animationContainer.className = 'season-animations';
     animationContainer.id = 'seasonAnimations';
-    document.body.appendChild(animationContainer);
+    // İçeriğin arkasında kalsın diye sayfanın en başına eklenir
+    document.body.insertBefore(animationContainer, document.body.firstChild);
+  }
+
+  // Düşen parçacık: dış katman düşer, iç katman salınır
+  function addFalling(innerClass, options) {
+    const outer = document.createElement('div');
+    outer.className = 'fall';
+    outer.style.left = rand(0, 100) + '%';
+    outer.style.animationDuration = rand(options.minDuration, options.maxDuration) + 's';
+    outer.style.animationDelay = -rand(0, options.maxDuration) + 's';
+    outer.style.opacity = rand(options.minOpacity || 0.6, 1);
+
+    const inner = document.createElement('span');
+    inner.className = 'sway ' + innerClass;
+    inner.style.animationDuration = rand(1.6, 3.4) + 's';
+    if (options.size) {
+      const size = rand(options.size[0], options.size[1]);
+      inner.style.width = size + 'px';
+      inner.style.height = (options.square ? size : size * 0.8) + 'px';
+    }
+    if (options.html) {
+      inner.innerHTML = options.html();
+    }
+
+    outer.appendChild(inner);
+    animationContainer.appendChild(outer);
   }
 
   // Kış - Kar yağması
   function createSnowAnimation() {
     createAnimationContainer();
     animationContainer.classList.add('snow-animation');
-    
-    for (let i = 0; i < 50; i++) {
-      const snowflake = document.createElement('div');
-      snowflake.className = 'snowflake';
-      snowflake.textContent = '❄';
-      snowflake.style.left = Math.random() * 100 + '%';
-      snowflake.style.animationDelay = Math.random() * 5 + 's';
-      snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-      snowflake.style.opacity = Math.random() * 0.8 + 0.2;
-      snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
-      animationContainer.appendChild(snowflake);
+
+    for (let i = 0; i < 46; i++) {
+      addFalling('flake', { minDuration: 6, maxDuration: 13, size: [4, 12], square: true, minOpacity: 0.5 });
     }
   }
 
-  // İlkbahar - Arılar ve kuşlar
+  // İlkbahar - Çiçek yaprakları ve kelebekler
   function createSpringAnimation() {
     createAnimationContainer();
     animationContainer.classList.add('spring-animation');
-    
-    // Arılar
-    for (let i = 0; i < 8; i++) {
-      const bee = document.createElement('div');
-      bee.className = 'bee';
-      bee.textContent = '🐝';
-      bee.style.left = Math.random() * 100 + '%';
-      bee.style.top = Math.random() * 100 + '%';
-      bee.style.animationDelay = Math.random() * 3 + 's';
-      bee.style.animationDuration = (Math.random() * 4 + 6) + 's';
-      animationContainer.appendChild(bee);
+
+    for (let i = 0; i < 22; i++) {
+      addFalling(i % 3 === 0 ? 'petal white' : 'petal', { minDuration: 9, maxDuration: 16, size: [11, 18] });
     }
-    
-    // Kuşlar
-    for (let i = 0; i < 5; i++) {
-      const bird = document.createElement('div');
-      bird.className = 'bird';
-      bird.textContent = '🐦';
-      bird.style.left = Math.random() * 100 + '%';
-      bird.style.top = Math.random() * 50 + '%';
-      bird.style.animationDelay = Math.random() * 2 + 's';
-      bird.style.animationDuration = (Math.random() * 3 + 8) + 's';
-      animationContainer.appendChild(bird);
+
+    // Kelebekler
+    if (window.GameArt) {
+      for (let i = 0; i < 3; i++) {
+        const butterfly = document.createElement('div');
+        butterfly.className = 'flutter';
+        butterfly.innerHTML = window.GameArt.icon('biyo');
+        butterfly.style.left = rand(2, 55) + '%';
+        butterfly.style.top = rand(18, 70) + '%';
+        butterfly.style.animationDuration = rand(9, 15) + 's';
+        butterfly.style.animationDelay = -rand(0, 8) + 's';
+        animationContainer.appendChild(butterfly);
+      }
     }
   }
 
-  // Yaz - Güneş, kelebekler, bulutlar
+  // Yaz - Güneş ışıltısı ve su baloncukları
   function createSummerAnimation() {
     createAnimationContainer();
     animationContainer.classList.add('summer-animation');
-    
-    // Güneş
+
     const sun = document.createElement('div');
-    sun.className = 'sun';
-    sun.textContent = '☀️';
+    sun.className = 'sun-glow';
     animationContainer.appendChild(sun);
-    
-    // Kelebekler
-    for (let i = 0; i < 6; i++) {
-      const butterfly = document.createElement('div');
-      butterfly.className = 'butterfly';
-      butterfly.textContent = '🦋';
-      butterfly.style.left = Math.random() * 100 + '%';
-      butterfly.style.top = Math.random() * 100 + '%';
-      butterfly.style.animationDelay = Math.random() * 2 + 's';
-      butterfly.style.animationDuration = (Math.random() * 3 + 7) + 's';
-      animationContainer.appendChild(butterfly);
-    }
-    
-    // Bulutlar
-    for (let i = 0; i < 3; i++) {
-      const cloud = document.createElement('div');
-      cloud.className = 'cloud';
-      cloud.textContent = '☁️';
-      cloud.style.left = Math.random() * 100 + '%';
-      cloud.style.top = Math.random() * 30 + '%';
-      cloud.style.animationDelay = Math.random() * 5 + 's';
-      cloud.style.animationDuration = (Math.random() * 10 + 20) + 's';
-      animationContainer.appendChild(cloud);
+
+    for (let i = 0; i < 18; i++) {
+      const outer = document.createElement('div');
+      outer.className = 'rise';
+      outer.style.left = rand(0, 100) + '%';
+      const duration = rand(8, 15);
+      outer.style.animationDuration = duration + 's';
+      outer.style.animationDelay = -rand(0, duration) + 's';
+
+      const bubble = document.createElement('span');
+      bubble.className = 'sway bubble-p';
+      const size = rand(10, 30);
+      bubble.style.width = size + 'px';
+      bubble.style.height = size + 'px';
+      bubble.style.animationDuration = rand(2, 4) + 's';
+
+      outer.appendChild(bubble);
+      animationContainer.appendChild(outer);
     }
   }
 
-  // Sonbahar - Yaprak düşmesi, rüzgar
+  // Sonbahar - Yaprak düşmesi
   function createAutumnAnimation() {
     createAnimationContainer();
     animationContainer.classList.add('autumn-animation');
-    
-    // Yapraklar
-    const leafEmojis = ['🍂', '🍁', '🍃'];
-    for (let i = 0; i < 25; i++) {
-      const leaf = document.createElement('div');
-      leaf.className = 'leaf';
-      leaf.textContent = leafEmojis[Math.floor(Math.random() * leafEmojis.length)];
-      leaf.style.left = Math.random() * 100 + '%';
-      leaf.style.animationDelay = Math.random() * 8 + 's';
-      // Yerçekimi etkisi için daha yavaş başlayıp hızlanan animasyon
-      leaf.style.animationDuration = (Math.random() * 3 + 8) + 's';
-      leaf.style.fontSize = (Math.random() * 12 + 18) + 'px';
-      leaf.style.opacity = Math.random() * 0.6 + 0.4;
-      animationContainer.appendChild(leaf);
+
+    const colors = ['#F08A3C', '#E0532A', '#F4B63F', '#C9772B', '#D9432E'];
+    for (let i = 0; i < 22; i++) {
+      addFalling('leaf-p', {
+        minDuration: 8,
+        maxDuration: 14,
+        html: () => {
+          const size = Math.round(rand(20, 36));
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2.500c6 3 8 9 5 14-2 3-5 4.500-5 4.500s-3-1.500-5-4.500c-3-5-1-11 5-14Z" fill="${color}"/>
+            <path d="M12 7v14.500" stroke="rgba(90,40,10,0.45)" stroke-width="1.400" stroke-linecap="round"/>
+          </svg>`;
+        }
+      });
     }
   }
 
@@ -153,4 +161,3 @@
   };
 
 })();
-

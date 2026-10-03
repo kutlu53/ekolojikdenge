@@ -5,179 +5,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bir Can’ın Gözünden Dünya - Oyun</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .panel {
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-            background: #e6f2ff;
-            padding: 18px 0 10px 0;
-            border-bottom: 2px solid #b3d1ff;
-        }
-        .panel-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 120px;
-        }
-        .panel-label {
-            font-weight: bold;
-            color: #2e8b57;
-        }
-        .panel-value {
-            margin-top: 4px;
-            font-size: 1em;
-            color: #444;
-            background: #fff;
-            border-radius: 6px;
-            padding: 2px 10px;
-        }
-        .game-main {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 40px;
-        }
-        #uiRole {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        #uiSeason {
-            font-size: 1.1em;
-            color: #2e8b57;
-            margin-bottom: 18px;
-        }
-        #sceneText {
-            max-width: 600px;
-            text-align: center;
-            font-size: 1.15em;
-            margin-bottom: 30px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            padding: 18px 24px;
-            box-shadow: 0 2px 8px #0001;
-        }
-        #choices {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-bottom: 40px;
-        }
-        .choice-btn {
-            padding: 12px 28px;
-            font-size: 1.1em;
-            border: none;
-            border-radius: 8px;
-            background: #2e8b57;
-            color: #fff;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .choice-btn:hover {
-            background: #246b43;
-        }
-        /* Restart button styles moved to style.css */
-    </style>
 </head>
 <body>
-    <div class="panel">
-        <div class="panel-item">
-            <span class="panel-label">🌿 Canlı Çeşitliliği</span>
-            <div class="panel-indicator">
-                <div class="stars-container" id="biyo-stars">⭐⭐⭐⭐⭐</div>
-                <div class="indicator-bar">
-                    <div class="indicator-bar-fill" id="biyo-bar"></div>
+    <header class="hud">
+        <!-- Yıl yolculuğu: her mevsimde 5 karar -->
+        <div class="journey" aria-label="Yıl ilerlemesi">
+            <div class="season-marker" data-season="İlkbahar">
+                <span class="marker-ico" data-ico="ilkbahar"></span>
+                <span>İlkbahar</span>
+                <span class="pips"></span>
+            </div>
+            <div class="season-marker" data-season="Yaz">
+                <span class="marker-ico" data-ico="yaz"></span>
+                <span>Yaz</span>
+                <span class="pips"></span>
+            </div>
+            <div class="season-marker" data-season="Sonbahar">
+                <span class="marker-ico" data-ico="sonbahar"></span>
+                <span>Sonbahar</span>
+                <span class="pips"></span>
+            </div>
+            <div class="season-marker" data-season="Kış">
+                <span class="marker-ico" data-ico="kis"></span>
+                <span>Kış</span>
+                <span class="pips"></span>
+            </div>
+        </div>
+
+        <!-- Göstergeler -->
+        <div class="panel">
+            <div class="panel-item" data-key="biyo" data-level="0">
+                <span class="panel-ico" data-ico="biyo"></span>
+                <span class="panel-label">Canlı Çeşitliliği</span>
+                <div class="panel-meter">
+                    <div class="stars-container" id="biyo-stars"></div>
+                    <span class="panel-value" id="biyo">Mükemmel</span>
                 </div>
             </div>
-            <span class="panel-value" id="biyo">Mükemmel</span>
-        </div>
-        <div class="panel-item">
-            <span class="panel-label">💧 Su Dengesi</span>
-            <div class="panel-indicator">
-                <div class="stars-container" id="su-stars">⭐⭐⭐⭐⭐</div>
-                <div class="indicator-bar">
-                    <div class="indicator-bar-fill" id="su-bar"></div>
+            <div class="panel-item" data-key="su" data-level="0">
+                <span class="panel-ico" data-ico="su"></span>
+                <span class="panel-label">Su Dengesi</span>
+                <div class="panel-meter">
+                    <div class="stars-container" id="su-stars"></div>
+                    <span class="panel-value" id="su">Mükemmel</span>
                 </div>
             </div>
-            <span class="panel-value" id="su">Mükemmel</span>
-        </div>
-        <div class="panel-item">
-            <span class="panel-label">🌱 Toprak Sağlığı</span>
-            <div class="panel-indicator">
-                <div class="stars-container" id="toprak-stars">⭐⭐⭐⭐⭐</div>
-                <div class="indicator-bar">
-                    <div class="indicator-bar-fill" id="toprak-bar"></div>
+            <div class="panel-item" data-key="toprak" data-level="0">
+                <span class="panel-ico" data-ico="toprak"></span>
+                <span class="panel-label">Toprak Sağlığı</span>
+                <div class="panel-meter">
+                    <div class="stars-container" id="toprak-stars"></div>
+                    <span class="panel-value" id="toprak">Mükemmel</span>
                 </div>
             </div>
-            <span class="panel-value" id="toprak">Mükemmel</span>
-        </div>
-        <div class="panel-item">
-            <span class="panel-label">🌬️ Hava/İklim</span>
-            <div class="panel-indicator">
-                <div class="stars-container" id="hava-stars">⭐⭐⭐⭐⭐</div>
-                <div class="indicator-bar">
-                    <div class="indicator-bar-fill" id="hava-bar"></div>
+            <div class="panel-item" data-key="hava" data-level="0">
+                <span class="panel-ico" data-ico="hava"></span>
+                <span class="panel-label">Hava/İklim</span>
+                <div class="panel-meter">
+                    <div class="stars-container" id="hava-stars"></div>
+                    <span class="panel-value" id="hava">Mükemmel</span>
                 </div>
             </div>
-            <span class="panel-value" id="hava">Mükemmel</span>
-        </div>
-        <div class="panel-item">
-            <span class="panel-label">👥 İnsan Etkisi</span>
-            <div class="panel-indicator">
-                <div class="stars-container" id="insan-stars">⭐⭐⭐⭐⭐</div>
-                <div class="indicator-bar">
-                    <div class="indicator-bar-fill" id="insan-bar"></div>
+            <div class="panel-item" data-key="insan" data-level="0">
+                <span class="panel-ico" data-ico="insan"></span>
+                <span class="panel-label">İnsan Mutluluğu</span>
+                <div class="panel-meter">
+                    <div class="stars-container" id="insan-stars"></div>
+                    <span class="panel-value" id="insan">Mükemmel</span>
                 </div>
             </div>
-            <span class="panel-value" id="insan">Mükemmel</span>
         </div>
-    </div>
-    <!-- İlerleme Çubuğu -->
-    <div class="progress-container">
-        <div class="progress-label">Yıl İlerlemesi</div>
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
+    </header>
+
+    <main class="game-main">
+        <div class="stage">
+            <div class="actor" id="actor">
+                <div id="uiRole"><span id="roleIcon"></span></div>
+                <div class="actor-name" id="roleText"></div>
+                <div class="can" id="uiCan"></div>
+            </div>
+            <div class="bubble">
+                <div id="uiSeason"></div>
+                <div id="sceneText"></div>
+                <div id="uiObservation"></div>
+            </div>
         </div>
-        <div class="progress-seasons">
-            <span class="season-marker" data-season="İlkbahar">İlkbahar</span>
-            <span class="season-marker" data-season="Yaz">Yaz</span>
-            <span class="season-marker" data-season="Sonbahar">Sonbahar</span>
-            <span class="season-marker" data-season="Kış">Kış</span>
-        </div>
-    </div>
-    <div class="game-main">
-        <div id="uiRole">
-            <span id="roleIcon">🐝</span>
-            <span id="roleText">Arı</span>
-        </div>
-        <div id="uiSeason">İlkbahar</div>
-        <div id="sceneText"></div>
         <div id="choices"></div>
-    </div>
-    <button class="restart-btn" id="restartBtn" title="Yeniden Başla">🔄</button>
-    <button class="audio-toggle" id="audioToggle" title="Ses Aç/Kapat">🔊</button>
-    <button class="history-btn" id="historyBtn" title="Karar Geçmişi">📜</button>
-    <button class="achievements-btn" id="achievementsBtn" title="Başarı Rozetleri">🏆</button>
-    
+    </main>
+
+    <nav class="tools">
+        <button class="tool-btn achievements-btn" id="achievementsBtn" title="Başarı Rozetleri" aria-label="Başarı Rozetleri" data-ico="trophy"></button>
+        <button class="tool-btn history-btn" id="historyBtn" title="Karar Geçmişi" aria-label="Karar Geçmişi" data-ico="history"></button>
+        <button class="tool-btn audio-toggle" id="audioToggle" title="Ses Aç/Kapat" aria-label="Ses Aç/Kapat" data-ico="sound"></button>
+        <button class="tool-btn restart-btn" id="restartBtn" title="Yeniden Başla" aria-label="Yeniden Başla" data-ico="restart"></button>
+    </nav>
+
     <!-- Karar Geçmişi Modal -->
     <div class="history-modal" id="historyModal">
         <div class="history-content">
-            <h2>Karar Geçmişi</h2>
+            <h2>📜 Karar Geçmişi</h2>
             <div id="historyList"></div>
-            <button onclick="document.getElementById('historyModal').classList.remove('show')" style="margin-top: 16px; padding: 10px 20px; background: #2e8b57; color: white; border: none; border-radius: 8px; cursor: pointer;">Kapat</button>
+            <button class="modal-close" data-close="historyModal">Kapat</button>
         </div>
     </div>
-    
+
     <!-- Başarı Rozetleri Modal -->
     <div class="history-modal" id="achievementsModal">
         <div class="history-content">
-            <h2>Başarı Rozetleri</h2>
+            <h2>🏆 Başarı Rozetleri</h2>
             <div id="achievementsList"></div>
-            <button onclick="document.getElementById('achievementsModal').classList.remove('show')" style="margin-top: 16px; padding: 10px 20px; background: #2e8b57; color: white; border: none; border-radius: 8px; cursor: pointer;">Kapat</button>
+            <button class="modal-close" data-close="achievementsModal">Kapat</button>
         </div>
     </div>
-    
+
+    <script src="js/art.js"></script>
     <script src="js/scenes.js"></script>
     <script src="js/engine.js"></script>
     <script src="js/audio.js"></script>
@@ -187,11 +128,14 @@
     <script src="js/minigames.js"></script>
     <script src="js/season-animations.js"></script>
     <script src="js/magical-effects.js"></script>
-    <script src="js/feedback.js"></script>
     <script src="js/ui.js"></script>
     <script>
       // Oyun başlatma
       window.addEventListener('DOMContentLoaded', function() {
+        if (window.GameArt) {
+          GameArt.mount();
+        }
+
         if (window.GameEngine && window.GameUI) {
           GameEngine.init();
           GameEngine.subscribe((state) => {
@@ -202,33 +146,39 @@
           const state = GameEngine.getState();
           const scene = GameEngine.getScene(state.currentSceneId);
           GameUI.render(state, scene);
-          
+
           // Masalsı efektleri başlat
           if (window.MagicalEffects) {
             window.MagicalEffects.init();
           }
-          
+
           // Yeniden başlat butonu
           const restartBtn = document.getElementById('restartBtn');
           if (restartBtn) {
             restartBtn.onclick = function() {
               GameEngine.restart();
-              const state = GameEngine.getState();
-              const scene = GameEngine.getScene(state.currentSceneId);
-              GameUI.render(state, scene);
             };
           }
-          
+
           // Ses kontrol butonu
           const audioToggle = document.getElementById('audioToggle');
           if (audioToggle && window.AudioManager) {
             audioToggle.onclick = function() {
               const enabled = window.AudioManager.toggleAudio();
-              audioToggle.textContent = enabled ? '🔊' : '🔇';
+              audioToggle.innerHTML = GameArt.icon(enabled ? 'sound' : 'mute');
               audioToggle.classList.toggle('muted', !enabled);
             };
           }
-          
+
+          // Pencereleri kapatma: "Kapat" butonu veya dışarı tıklama
+          document.querySelectorAll('.history-modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+              if (e.target === modal || e.target.hasAttribute('data-close')) {
+                modal.classList.remove('show');
+              }
+            });
+          });
+
           // Karar geçmişi butonu
           const historyBtn = document.getElementById('historyBtn');
           const historyModal = document.getElementById('historyModal');
@@ -238,7 +188,7 @@
               const list = document.getElementById('historyList');
               if (list) {
                 if (history.length === 0) {
-                  list.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Henüz karar verilmedi.</p>';
+                  list.innerHTML = '<p class="modal-empty">Henüz karar verilmedi.</p>';
                 } else {
                   list.innerHTML = history.slice().reverse().map(decision => `
                     <div class="history-item">
@@ -249,12 +199,10 @@
                   `).join('');
                 }
               }
-              if (historyModal) {
-                historyModal.classList.add('show');
-              }
+              historyModal.classList.add('show');
             };
           }
-          
+
           // Başarı rozetleri butonu
           const achievementsBtn = document.getElementById('achievementsBtn');
           const achievementsModal = document.getElementById('achievementsModal');
@@ -264,25 +212,23 @@
               const list = document.getElementById('achievementsList');
               if (list) {
                 if (achievements.length === 0) {
-                  list.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Henüz başarı rozeti yok.</p>';
+                  list.innerHTML = '<p class="modal-empty">Henüz başarı rozeti yok.</p>';
                 } else {
                   list.innerHTML = achievements.map(ach => `
-                    <div class="history-item" style="${ach.earned ? '' : 'opacity: 0.5;'}">
-                      <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 2em;">${ach.icon || '🏆'}</span>
-                        <div style="flex: 1;">
-                          <div style="font-weight: bold; margin-bottom: 4px;">${ach.name || 'Başarı'}</div>
-                          <div style="font-size: 0.9em; color: #666;">${ach.description || ''}</div>
-                          ${ach.earned ? '<div style="font-size: 0.8em; color: #2e8b57; margin-top: 4px;">✓ Kazanıldı</div>' : '<div style="font-size: 0.8em; color: #999; margin-top: 4px;">Kazanılmadı</div>'}
+                    <div class="history-item ${ach.earned ? '' : 'locked'}">
+                      <div class="badge-row">
+                        <span class="badge-icon">${ach.icon || '🏆'}</span>
+                        <div>
+                          <div class="badge-name">${ach.name || 'Başarı'}</div>
+                          <div class="badge-desc">${ach.description || ''}</div>
+                          <div class="badge-state">${ach.earned ? '✓ Kazanıldı' : 'Henüz kazanılmadı'}</div>
                         </div>
                       </div>
                     </div>
                   `).join('');
                 }
               }
-              if (achievementsModal) {
-                achievementsModal.classList.add('show');
-              }
+              achievementsModal.classList.add('show');
             };
           }
         }
