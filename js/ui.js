@@ -129,11 +129,12 @@
     const currentIndex = seasonOrder.indexOf(season);
     const history = window.DecisionHistory ? window.DecisionHistory.get() : [];
 
-    // Her mevsimde 5 karar var; verilen kararlar nokta olarak dolar
+    // Her mevsimde 3 karar var; verilen kararlar nokta olarak dolar
+    const perSeason = window.GameEngine.DECISIONS_PER_SEASON || 3;
     seasonMarkers.forEach(marker => {
       const markerSeason = marker.getAttribute("data-season");
       const markerIndex = seasonOrder.indexOf(markerSeason);
-      const made = Math.min(5, history.filter(d => d.season === markerSeason).length);
+      const made = Math.min(perSeason, history.filter(d => d.season === markerSeason).length);
 
       marker.classList.toggle("active", markerIndex === currentIndex);
       marker.classList.toggle("done", markerIndex < currentIndex);
@@ -142,7 +143,7 @@
       if (pips) {
         const before = pips.querySelectorAll(".pip.on").length;
         let html = "";
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < perSeason; i++) {
           const isNew = i < made && i >= before;
           html += `<span class="pip${i < made ? " on" : ""}${isNew ? " new" : ""}"></span>`;
         }
@@ -232,6 +233,70 @@
   }
 
 
+  // Oyun başı: kaldığı yerden devam ya da sınıf seçimi
+  function showStartOverlay() {
+    let overlay = document.getElementById("startOverlay");
+    if (overlay) overlay.remove();
+    overlay = document.createElement("div");
+    overlay.id = "startOverlay";
+    overlay.className = "start-overlay";
+    const engine = window.GameEngine;
+    const art = window.GameArt;
+
+    const renderLevels = () => {
+      const levels = engine.PLAYER_LEVELS;
+      const arts = { kucuk: "ari", orta: "balik", buyuk: "tilki" };
+      overlay.innerHTML = `
+        <div class="start-card">
+          <div class="start-kicker">Bir Can'ın Gözünden Dünya</div>
+          <h2>Kaçıncı sınıftasın?</h2>
+          <p class="start-note">Oyunlar sınıfına göre kolaylaşır ya da zorlaşır.</p>
+          <div class="level-buttons">
+            ${Object.values(levels).map(lv => `
+              <button class="level-btn" type="button" data-level="${lv.id}">
+                <span class="level-art">${art ? art.character(arts[lv.id]) : ""}</span>
+                <span class="level-label">${lv.label}</span>
+              </button>`).join("")}
+          </div>
+        </div>`;
+      overlay.querySelectorAll(".level-btn").forEach(btn => {
+        btn.onclick = () => {
+          if (window.AudioManager) window.AudioManager.playSound("click");
+          overlay.remove();
+          engine.newGame(btn.getAttribute("data-level"));
+        };
+      });
+      if (window.AudioManager && window.AudioManager.playNarration) {
+        setTimeout(() => window.AudioManager.playNarration("sinif_sec", "Kaçıncı sınıftasın? Birinci ve ikinci sınıf, üçüncü dördüncü ve beşinci sınıf, ya da altıncı yedinci ve sekizinci sınıf."), 300);
+      }
+    };
+
+    if (engine.hasSave()) {
+      overlay.innerHTML = `
+        <div class="start-card">
+          <div class="start-kicker">Bir Can'ın Gözünden Dünya</div>
+          <h2>Yarım kalmış bir yıl var!</h2>
+          <p class="start-note">Kaldığın yerden devam edelim mi?</p>
+          <div class="start-actions">
+            <button class="choice-btn start-resume" type="button">▶ Devam Et</button>
+            <button class="choice-btn start-new" type="button">Yeni Oyun</button>
+          </div>
+        </div>`;
+      overlay.querySelector(".start-resume").onclick = () => {
+        if (window.AudioManager) window.AudioManager.playSound("click");
+        overlay.remove();
+        engine.resume();
+      };
+      overlay.querySelector(".start-new").onclick = () => {
+        if (window.AudioManager) window.AudioManager.playSound("click");
+        renderLevels();
+      };
+    } else {
+      renderLevels();
+    }
+    document.body.appendChild(overlay);
+  }
+
   function render(state, scene) {
     // Scene ve state kontrolü
     if (!scene) {
@@ -242,7 +307,15 @@
       console.error("State is null or undefined");
       return;
     }
-    
+
+    // Sınıf seçilmediyse önce açılış ekranı
+    if (!state.level) {
+      showStartOverlay();
+      return;
+    }
+    const startOverlay = document.getElementById("startOverlay");
+    if (startOverlay) startOverlay.remove();
+
     // Rol, mevsim, metin - her zaman göster
     // Mevsimlere göre otomatik rol ataması
     const roleIcon = document.getElementById("roleIcon");
@@ -297,32 +370,20 @@
     replayClass(elSceneText, "text-in");
     setCan(state, role);
     
-    // Tüm metinleri seslendir (eğer metin varsa ve mini dönüt yoksa)
-    // Mini dönüt seslendirmesi devam ediyorsa bekleyelim
-    if (scene.text && window.AudioManager && window.AudioManager.playNarration) {
-      // Mini dönüt seslendirmesi devam ediyorsa bekle
-      const waitForFeedback = () => {
-        if (window.speechSynthesis && window.speechSynthesis.speaking) {
-          // Mini dönüt seslendirmesi devam ediyor, bekle
-          setTimeout(waitForFeedback, 200);
-        } else {
-          // Seslendirme bitti, yeni metni seslendir
-          setTimeout(() => {
-            window.AudioManager.playNarration(scene.id, scene.text);
-          }, 300);
+    // Sahneyi seslendir: kayıtlı dosya varsa o, yoksa konuşma sentezi
+    if (window.AudioManager && window.AudioManager.playNarration) {
+      window.AudioManager.stopNarration();
+      setTimeout(() => {
+        if (window.GameEngine.getState().currentSceneId !== scene.id) return;
+        if (scene.isEcho) {
+          window.AudioManager.playNarrationList(scene.items.map(item => ({
+            id: item.mood ? ('mutsuz_' + item.target) : ('sonuc_' + item.scene + '_' + item.choice),
+            text: item.text
+          })));
+        } else if (scene.text) {
+          window.AudioManager.playNarration(scene.ses || scene.id, scene.text);
         }
-      };
-      
-      // Önceki seslendirmeyi durdur (sadece mini dönüt değilse)
-      if (window.AudioManager.stopNarration) {
-        // Mini dönüt kontrolü yap
-        if (!window.speechSynthesis || !window.speechSynthesis.speaking) {
-          window.AudioManager.stopNarration();
-        }
-      }
-      
-      // Yeni metni seslendir (mini dönüt bitene kadar bekle)
-      waitForFeedback();
+      }, 350);
     }
     
     // Fade-in sınıfını kaldır (eğer varsa)
@@ -377,6 +438,10 @@
     
     // Gösterge paneli
     setIndicators(state.indicators);
+    // Vadi haritası: göstergeler vadide görünür
+    if (window.Valley) {
+      window.Valley.update(state, scene.season);
+    }
     // İlerleme çubuğunu güncelle
     if (scene.season) {
       updateProgress(scene.season);
@@ -394,7 +459,30 @@
     elChoices.style.transition = 'opacity 0.3s ease';
     
     // Seçenek butonları veya final butonları
-    if (scene.choices && Array.isArray(scene.choices) && scene.choices.length > 0) {
+    if (scene.oyun && window.MiniGames && window.MiniGames.has(scene.oyun)) {
+      // Karar bir mini oyunla verilir
+      elChoices.setAttribute("data-count", 1);
+      const playBtn = document.createElement("button");
+      playBtn.className = "choice-btn play-btn";
+      playBtn.innerHTML = `<span class="play-ico">🎮</span> Haydi Oynayalım!`;
+      playBtn.onclick = () => {
+        lockButtons(1000);
+        if (window.AudioManager) {
+          if (window.AudioManager.stopNarration) window.AudioManager.stopNarration();
+          window.AudioManager.playSound('click');
+        }
+        window.MiniGames.play(scene.oyun, state, scene).then(result => {
+          // Bu arada oyun yeniden başlatıldıysa sonucu uygulama
+          if (!result || window.GameEngine.getState().currentSceneId !== scene.id) return;
+          const choice = scene.choices.find(c => c.id === result.choice) || scene.choices[0];
+          if (window.DecisionHistory && window.DecisionHistory.add) {
+            window.DecisionHistory.add(scene, choice, window.GameEngine.getState());
+          }
+          window.GameEngine.choose(choice.id, { stars: result.stars });
+        });
+      };
+      elChoices.appendChild(playBtn);
+    } else if (scene.choices && Array.isArray(scene.choices) && scene.choices.length > 0) {
       // Seçenekleri rastgele karıştır (Fisher-Yates shuffle)
       const shuffledChoices = [...scene.choices];
       for (let i = shuffledChoices.length - 1; i > 0; i--) {
@@ -444,39 +532,6 @@
           };
         elChoices.appendChild(btn);
       });
-    } else if (scene.minigame && window.MiniGames) {
-      // Mini oyun sahnesi: "Oyna" ve "Atla"
-      elChoices.setAttribute("data-count", 2);
-      const stopNarration = () => {
-        if (window.AudioManager && window.AudioManager.stopNarration) {
-          window.AudioManager.stopNarration();
-        }
-        if (window.AudioManager) window.AudioManager.playSound('click');
-      };
-
-      const playBtn = document.createElement("button");
-      playBtn.className = "choice-btn play-btn";
-      playBtn.textContent = "🎮 Oyna!";
-      playBtn.onclick = () => {
-        lockButtons(1000);
-        stopNarration();
-        window.MiniGames.play(scene.minigame, state).then(result => {
-          // Bu arada oyun yeniden başlatıldıysa sonucu uygulama
-          if (window.GameEngine.getState().currentSceneId !== scene.id) return;
-          window.GameEngine.finishMinigame(result.stars);
-        });
-      };
-      elChoices.appendChild(playBtn);
-
-      const skipBtn = document.createElement("button");
-      skipBtn.className = "choice-btn skip-btn";
-      skipBtn.textContent = "Atla";
-      skipBtn.onclick = () => {
-        lockButtons(100);
-        stopNarration();
-        window.GameEngine.next();
-      };
-      elChoices.appendChild(skipBtn);
     } else if (scene.id && scene.id.startsWith("final_")) {
       // Final sahnesi için özel ekran göster
       showFinalScreen(state, scene);
@@ -509,47 +564,53 @@
     finalContainer.innerHTML = `
       <div class="final-content">
         <div class="final-header">
-          <h2>🌍 Yıl Sonu Raporu</h2>
-          <p class="final-subtitle">Seçimlerinizin etkileri ve ekolojik denge</p>
+          <h2>🎉 Vadi Şenliği</h2>
+          <p class="final-subtitle">Bir yıl geçti. Can Vadisi'ne birlikte bakalım!</p>
         </div>
-        
+
         <div class="final-sections">
           <!-- Yıl Sonu Mesajı -->
           <div class="final-section final-winter-message">
-            <h3>💌 Yıl Sonu Mesajı</h3>
             <div id="finalWinterMessage" class="winter-message"></div>
           </div>
-          
+
+          <!-- Vadi nasıl değişti? -->
+          <div class="final-section">
+            <h3>🌍 Vadi Nasıl Değişti?</h3>
+            <div id="finalValley" class="valley-compare"></div>
+          </div>
+
           <!-- Canlıların Yılı -->
           <div class="final-section final-message">
-            <h3>💗 Canlıların Yılı</h3>
+            <h3>💗 Arkadaşların</h3>
             <p class="section-description">
               Bu yıl dört canlının gözünden baktın. Bakalım onlar yılı nasıl geçirdi?
             </p>
             <div id="finalMessage" class="ecological-message"></div>
           </div>
-          
-          <!-- Parametre Sonuçları -->
-          <div class="final-section">
-            <h3>📈 Doğa ve İnsanlar</h3>
-            <p class="section-description">
-              Su, toprak, hava ve canlılar birbirine bağlıdır. İnsanlar da bu dengenin bir parçasıdır. 
-              Yıldızlar ne kadar çoksa durum o kadar iyi demektir.
-            </p>
-            <div id="finalIndicators" class="final-indicators"></div>
-          </div>
-          
-          <!-- Seçim Özeti Bölümü -->
-          <div class="final-section">
-            <h3>📊 Senin Seçimlerin</h3>
-            <p class="section-description">
-              Bir yıl boyunca verdiğin kararlar. Bazılarının sonucu hemen görüldü, 
-              bazıları ise mevsimler sonra ortaya çıktı.
-            </p>
-            <div id="finalDecisions" class="decisions-list"></div>
-          </div>
+
+          <!-- Ayrıntılı rapor (öğretmenler için) -->
+          <details class="final-details">
+            <summary>📋 Ayrıntılı rapor (öğretmenler ve meraklılar için)</summary>
+            <div class="final-section">
+              <h3>📈 Doğa ve İnsanlar</h3>
+              <p class="section-description">
+                Su, toprak, hava ve canlılar birbirine bağlıdır. İnsanlar da bu dengenin bir parçasıdır.
+                Yıldızlar ne kadar çoksa durum o kadar iyi demektir.
+              </p>
+              <div id="finalIndicators" class="final-indicators"></div>
+            </div>
+            <div class="final-section">
+              <h3>📊 Senin Seçimlerin</h3>
+              <p class="section-description">
+                Bir yıl boyunca verdiğin kararlar. Bazılarının sonucu hemen görüldü,
+                bazıları ise mevsimler sonra ortaya çıktı.
+              </p>
+              <div id="finalDecisions" class="decisions-list"></div>
+            </div>
+          </details>
         </div>
-        
+
         <div class="final-actions">
           <button class="choice-btn final-btn" id="finalRestart">🔄 Yeniden Oyna</button>
           <button class="choice-btn final-btn" id="finalSurvey">📝 Anket/Görüş</button>
@@ -557,10 +618,11 @@
         </div>
       </div>
     `;
-    
+
     elChoices.appendChild(finalContainer);
-    
+
     fillWinterMessage(state, scene);
+    fillValleyCompare(state);
     fillCreatures(state);
     fillIndicatorsSummary(state);
     fillDecisionsSummary(state);
@@ -682,6 +744,18 @@
     indicatorsEl.innerHTML = html;
   }
   
+  // Vadi nasıl değişti: yılın başı (her şey Orta) ve şimdi (gelecek bahar)
+  function fillValleyCompare(state) {
+    const el = document.getElementById('finalValley');
+    if (!el || !window.Valley || !window.Valley.draw) return;
+    const start = { indicators: { biyo: 'Orta', su: 'Orta', toprak: 'Orta', hava: 'Orta', insan: 'Orta' } };
+    el.innerHTML = `
+      <div class="valley-card"><div class="valley-cap">Yılın başı</div>${window.Valley.draw(start, 'İlkbahar')}</div>
+      <div class="valley-arrow">➜</div>
+      <div class="valley-card"><div class="valley-cap">Gelecek bahar</div>${window.Valley.draw(state, 'İlkbahar')}</div>
+    `;
+  }
+
   // Canlıların yılı: dört canlının kalpleri
   function fillCreatures(state) {
     const el = document.getElementById('finalMessage');
@@ -697,7 +771,7 @@
       for (let i = 0; i < max; i++) {
         hearts += window.GameArt.icon(i < value ? 'heart' : 'heartOff');
       }
-      return `<div class="creature-card">
+      return `<div class="creature-card${value >= 2 ? ' dance' : ''}">
         <div class="creature-art" data-mood="${value}">${window.GameArt.character(role)}</div>
         <div class="creature-name">${window.GameArt.roleName(role)}</div>
         <div class="creature-hearts">${hearts}</div>
@@ -723,7 +797,7 @@
         'Mutsuz insanlar bir süre sonra kuralları dinlemez. Doğayı korumak için insanların da yanında olması gerekir.'],
       final_2: ['info', 'Karışık bir yıl. 🍂',
         'Bazı kararlar doğaya iyi geldi, bazıları onu yordu.',
-        'Yukarıdaki listeye bak: hangi kararın sonucu seni şaşırttı? Bazı etkiler ancak mevsimler sonra ortaya çıktı.'],
+        'Aşağıdaki ayrıntılı rapora bak: hangi kararın sonucu seni şaşırttı? Bazı etkiler ancak mevsimler sonra ortaya çıktı.'],
       final_3: ['warning', 'Zor bir yıl. 🌧️',
         'Bu yıl hem doğa hem insanlar zorlandı.',
         'Her kararda iki şeyi sor: “Bu, doğaya ne yapar? İnsanlara ne yapar?” Yeniden denemek ister misin?'],

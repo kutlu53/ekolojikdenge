@@ -11,6 +11,16 @@
     insan: "İnsan Mutluluğu"
   };
 
+  // Her mevsimde kaç karar var (ilerleme noktaları için)
+  const DECISIONS_PER_SEASON = 3;
+
+  // Zorluk seviyeleri: oyun başında sınıf seçimiyle belirlenir
+  const PLAYER_LEVELS = {
+    kucuk: { id: "kucuk", label: "1. – 2. sınıf", short: "Küçükler" },
+    orta: { id: "orta", label: "3. – 5. sınıf", short: "Ortalar" },
+    buyuk: { id: "buyuk", label: "6. – 8. sınıf", short: "Büyükler" }
+  };
+
   // Her canlının kendi ihtiyacı (kalpler): 0-3
   const CAN_MAX = 3;
   const CAN_START = 2;
@@ -21,6 +31,8 @@
     tilki: "Yuvam"
   };
 
+  const SAVE_KEY = "ekoDengeKayit";
+
   // İnsanlar mutsuzsa kurallara uymaz: bu sahnelerden önce kontrol edilir
   const MOOD_EVENTS = {
     "yaz_01": { metin: "İnsanlar bu aralar mutsuz. “Hep yasak, hep yasak!” diyorlar. Bazıları kuralları dinlemeyip dereye çöp attı.", etki: { su: -1 } },
@@ -29,13 +41,13 @@
     "FINAL_PICK": { metin: "İnsanlar bu aralar mutsuz. “Bize ne!” deyip bahçe atıklarını yine yaktılar.", etki: { hava: -1 } }
   };
 
-  // Event (Gözlem Notu) kuralları
   // Helper function to get indicator level as number (0=Mükemmel, 1=İyi, 2=Orta, 3=Zayıf, 4=Kritik)
   function getIndicatorLevel(state, key) {
     const level = state.indicators[key];
     return LEVELS.indexOf(level);
   }
 
+  // Event (Gözlem Notu) kuralları
   const EVENT_RULES = [
     {
       id: "sel_riski",
@@ -56,10 +68,10 @@
 
   let state = null;
   let listeners = [];
-  let stepCount = 0;
 
   function getDefaultState() {
     return {
+      level: null,              // kucuk | orta | buyuk (sınıf seçimi yapılmadıysa null)
       currentSceneId: "SP_START",
       // Her şey "Orta" başlar: hem iyileşme hem kötüleşme görülebilir
       indicators: {
@@ -72,6 +84,7 @@
       can: { ari: CAN_START, balik: CAN_START, agac: CAN_START, tilki: CAN_START },
       echoes: [],   // ileride ortaya çıkacak sonuçlar: { before, season, label, text, etki }
       dynamic: {},  // oyun sırasında oluşturulan "hatırlıyor musun" sahneleri
+      games: {},    // oynanan mini oyunlar: { sahneId: { choice, stars } }
       events: [],
       observation: ""
     };
@@ -87,7 +100,55 @@
   }
 
   function notify() {
+    save();
     listeners.forEach(fn => fn(state));
+  }
+
+  // ---------- Kayıt: yarıda kalan oyun kaldığı yerden açılır ----------
+  function save() {
+    if (!state || !state.level) return;
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn("Oyun kaydedilemedi:", e);
+    }
+  }
+
+  function loadSave() {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return null;
+      const saved = JSON.parse(raw);
+      if (!saved || !saved.level || !saved.currentSceneId) return null;
+      // Kayıt eski bir senaryoya aitse (sahne artık yoksa) geçersiz say
+      const scene = (saved.dynamic && saved.dynamic[saved.currentSceneId]) ||
+        (window.SCENES || []).find(s => s.id === saved.currentSceneId);
+      if (!scene) return null;
+      return Object.assign(getDefaultState(), saved);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function clearSave() {
+    try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* yok say */ }
+  }
+
+  // Devam edilebilecek bir kayıt var mı? (Başlangıç sahnesinde kalmış kayıt sayılmaz)
+  function hasSave() {
+    const saved = loadSave();
+    if (!saved) return false;
+    if (saved.currentSceneId === "SP_START") return false;
+    if (typeof saved.currentSceneId === "string" && saved.currentSceneId.startsWith("final_")) return false;
+    return true;
+  }
+
+  function resume() {
+    const saved = loadSave();
+    if (!saved) return false;
+    state = saved;
+    notify();
+    return true;
   }
 
   // delta: +1 = bir seviye iyileşir, -1 = bir seviye kötüleşir
@@ -111,7 +172,6 @@
   }
 
   function step() {
-    stepCount++;
     // Event kontrolü
     checkEvents();
     // Başarı kontrolü
@@ -128,7 +188,7 @@
     state.echoes = state.echoes.filter(e => e.before !== id);
 
     if (MOOD_EVENTS[id] && getIndicatorLevel(state, "insan") >= 3) {
-      items.push({ mood: true, text: MOOD_EVENTS[id].metin, etki: MOOD_EVENTS[id].etki });
+      items.push({ mood: true, target: id, text: MOOD_EVENTS[id].metin, etki: MOOD_EVENTS[id].etki });
     }
 
     if (!target || items.length === 0) {
@@ -152,7 +212,9 @@
     state.currentSceneId = echoScene.id;
   }
 
-  function choose(choiceId) {
+  // Bir seçenek seçildi (butonla ya da mini oyunun sonucuyla).
+  // extra.stars  : mini oyundaki ustalık (1-3); 3 yıldız canlıya bir kalp kazandırır
+  function choose(choiceId, extra) {
     const scene = getScene(state.currentSceneId);
     if (!scene || !scene.choices) return;
     const choice = scene.choices.find(c => c.id === choiceId);
@@ -161,11 +223,19 @@
     // Hemen görülen etkiler
     applyEffects(choice.simdi, scene.role);
 
+    // Mini oyun iyi oynandıysa canlı bir kalp kazanır
+    if (extra && extra.stars) {
+      state.games[scene.id] = { choice: choiceId, stars: extra.stars };
+      if (extra.stars >= 3) applyEffects({ can: +1 }, scene.role);
+    }
+
     // İleride ortaya çıkacak sonuç
     if (choice.sonra) {
       state.echoes.push({
         before: choice.sonra.once,
         season: scene.season,
+        scene: scene.id,
+        choice: choice.id,
         label: choice.label,
         text: choice.sonra.metin,
         etki: choice.sonra.etki
@@ -228,43 +298,50 @@
     notify();
   }
 
-  // Mini oyun bitti: iyi oynandıysa (2-3 yıldız) canlı bir kalp kazanır
-  function finishMinigame(stars) {
-    const scene = getScene(state.currentSceneId);
-    if (!scene || !scene.minigame) return;
-    if (stars >= 2) {
-      applyEffects({ can: +1 }, scene.role);
-    }
-    next();
-  }
-
+  // Boş durum: sınıf seçimi bekleniyor
   function init() {
     state = getDefaultState();
-    stepCount = 0;
+  }
+
+  // Sınıf seçildi, yeni oyun başlıyor
+  function newGame(level) {
+    state = getDefaultState();
+    state.level = PLAYER_LEVELS[level] ? level : "orta";
     // Yeni oyun: önceki oyunun karar geçmişi yıl sonu raporuna karışmasın
     if (window.DecisionHistory) {
       window.DecisionHistory.clear();
     }
+    notify();
   }
 
+  // Baştan başla: kayıt silinir, sınıf seçimine dönülür
   function restart() {
+    clearSave();
+    if (window.DecisionHistory) {
+      window.DecisionHistory.clear();
+    }
     init();
     notify();
   }
 
   window.GameEngine = {
     init,
+    newGame,
+    hasSave,
+    resume,
     getScene,
     choose,
     next,
-    finishMinigame,
     restart,
     subscribe,
     getState: () => state,
+    getLevel: () => (state && state.level) || "orta",
     LEVELS,
     INDICATOR_KEYS,
     NATURE_KEYS,
     INDICATOR_LABELS,
+    DECISIONS_PER_SEASON,
+    PLAYER_LEVELS,
     CAN_MAX,
     CAN_LABELS,
     pickFinalSceneId

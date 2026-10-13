@@ -2705,3 +2705,614 @@ body.landing {
     .mg-cards { gap: 8px; padding: 8px; }
     .mg-stars { font-size: 48px; }
 }
+
+/* ==========================================================
+   Can Vadisi (2B harita): göstergeler vadide görünür
+   ========================================================== */
+
+.valley {
+    position: relative;
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+    border: 4px solid #fff;
+    border-radius: 22px;
+    box-shadow: var(--shadow-card);
+    background: #BDE8F6;
+    overflow: hidden;
+}
+
+.valley svg {
+    display: block;
+    width: 100%;
+    height: clamp(120px, 22vh, 210px);
+}
+
+.valley-label {
+    position: absolute;
+    left: 12px;
+    top: 10px;
+    padding: 2px 12px 3px;
+    border-radius: 999px;
+    background: rgba(255, 249, 236, 0.9);
+    border: 2px solid #fff;
+    font-family: var(--font-title);
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+}
+
+.valley.valley-changed svg {
+    animation: valleyPulse 0.9s ease;
+}
+
+@keyframes valleyPulse {
+    0% { filter: brightness(1); }
+    30% { filter: brightness(1.18); }
+    100% { filter: brightness(1); }
+}
+
+.valley-cloud { animation: valleyDrift 60s linear infinite; }
+@keyframes valleyDrift {
+    from { transform: translateX(-40px); }
+    to { transform: translateX(440px); }
+}
+
+.valley-river { animation: valleyFlow 3s linear infinite; }
+@keyframes valleyFlow {
+    from { stroke-dashoffset: 32; }
+    to { stroke-dashoffset: 0; }
+}
+
+.valley-bird { animation: valleyBird 6s ease-in-out infinite; }
+@keyframes valleyBird {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(14px, -4px); }
+}
+
+.valley-smoke { animation: valleySmoke 3.5s ease-out infinite; }
+@keyframes valleySmoke {
+    0% { transform: translate(0, 0) scale(0.6); opacity: 0.8; }
+    100% { transform: translate(6px, -22px) scale(1.6); opacity: 0; }
+}
+
+.valley-flag { transform-box: fill-box; transform-origin: 0% 50%; animation: valleyFlag 1.2s ease-in-out infinite alternate; }
+@keyframes valleyFlag {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0.75); }
+}
+
+.valley-leaf { animation: valleyLeaf 4s linear infinite; }
+@keyframes valleyLeaf {
+    0% { transform: translate(0, 0) rotate(0); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translate(-10px, 26px) rotate(180deg); opacity: 0; }
+}
+
+.valley-snow { animation: valleySnow 6s linear infinite; }
+@keyframes valleySnow {
+    from { transform: translateY(-10px); opacity: 0; }
+    20% { opacity: 1; }
+    to { transform: translateY(60px); opacity: 0; }
+}
+
+/* ==========================================================
+   Açılış: kaldığın yerden devam / sınıf seçimi
+   ========================================================== */
+
+.start-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(30, 40, 30, 0.55);
+    backdrop-filter: blur(6px);
+    animation: fadeIn 0.3s ease;
+}
+
+.start-card {
+    width: min(620px, 100%);
+    padding: 30px 26px 28px;
+    background: var(--paper);
+    border: 4px solid #fff;
+    border-radius: 30px;
+    box-shadow: var(--shadow-card);
+    text-align: center;
+    animation: modalPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.start-kicker {
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ink-soft);
+}
+
+.start-card h2 {
+    margin: 4px 0 6px;
+    font-family: var(--font-title);
+    font-weight: 800;
+    font-size: 2.1rem;
+    line-height: 1.1;
+    color: var(--green-dark);
+}
+
+.start-note {
+    margin: 0 0 20px;
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+}
+
+.level-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.level-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 8px 12px;
+    background: #fff;
+    border: 4px solid var(--paper-edge);
+    border-radius: 24px;
+    box-shadow: 0 6px 0 var(--paper-edge);
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.level-btn:hover,
+.level-btn:focus-visible {
+    transform: translateY(-4px);
+    border-color: var(--green);
+    box-shadow: 0 10px 0 var(--green);
+    outline: none;
+}
+
+.level-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 var(--green);
+}
+
+.level-art {
+    width: 92px;
+    height: 92px;
+}
+
+.level-art .char {
+    animation: floatY 3s ease-in-out infinite;
+}
+
+.level-label {
+    font-family: var(--font-title);
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--ink);
+}
+
+.start-actions {
+    display: grid;
+    gap: 14px;
+}
+
+.start-actions .start-new {
+    --btn: #A8A294;
+    --btn-dark: #7D786C;
+}
+
+/* ==========================================================
+   Mini oyunlar: SVG sahne (her karar bir oyun)
+   ========================================================== */
+
+#choices > .choice-btn.play-btn {
+    --btn: var(--green);
+    --btn-dark: var(--green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 380px;
+    min-height: 76px;
+    font-size: 1.6rem;
+    font-weight: 800;
+    animation: btnPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards, startPulse 1.6s ease-in-out 0.6s infinite;
+}
+
+#choices > .choice-btn.play-btn::after {
+    content: none;
+}
+
+.play-ico {
+    font-size: 1.6em;
+    line-height: 1;
+}
+
+.mg-head {
+    gap: 10px;
+}
+
+.mg-hint {
+    flex: 1;
+    min-width: 0;
+    padding: 4px 12px;
+    background: #FFF1B8;
+    border: 2px dashed #E0B400;
+    border-radius: 999px;
+    color: #6B4E00;
+    font-weight: 800;
+    font-size: 0.98rem;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mg-hint:empty {
+    visibility: hidden;
+}
+
+.mg-done {
+    flex-shrink: 0;
+    padding: 6px 18px 8px;
+    border: 3px solid #fff;
+    border-radius: 999px;
+    background: var(--orange);
+    box-shadow: 0 4px 0 var(--orange-dark);
+    color: #fff;
+    font-family: var(--font-title);
+    font-weight: 800;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.mg-done:hover { transform: translateY(-2px); }
+.mg-done:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--orange-dark); }
+.mg-done:disabled { opacity: 0.5; cursor: default; }
+
+.mg-stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 22px;
+    background: #DDF0FF;
+    overflow: hidden;
+}
+
+.mg-stage svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+    font-family: var(--font-title);
+}
+
+.mg-stage svg text {
+    pointer-events: none;
+}
+
+.mg-message {
+    max-width: 520px;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--ink);
+}
+
+.mg-choice {
+    max-width: 520px;
+    margin: 0;
+    padding: 6px 16px;
+    background: #fff;
+    border: 2px solid var(--paper-edge);
+    border-radius: 16px;
+    font-size: 1rem;
+    color: var(--ink-soft);
+}
+
+.mg-choice span {
+    font-weight: 800;
+    color: var(--green-dark);
+}
+
+.mg-float-svg {
+    font-weight: 800;
+    paint-order: stroke fill;
+    stroke: #fff;
+    stroke-width: 1.4px;
+    animation: mgFloatSvg 0.9s ease-out forwards;
+}
+
+.mg-float-svg.good { fill: #2E9E4A; }
+.mg-float-svg.bad { fill: #E5533D; }
+
+@keyframes mgFloatSvg {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
+.mg-wave {
+    animation: mgWave 2.4s linear infinite;
+}
+
+@keyframes mgWave {
+    from { transform: translateX(0); }
+    to { transform: translateX(24px); }
+}
+
+.mg-stone {
+    cursor: grab;
+}
+
+.mg-stone:active {
+    cursor: grabbing;
+}
+
+.mg-stone-body {
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mg-bugs {
+    transition: opacity 0.2s ease;
+}
+
+.mg-bugs.flee {
+    animation: mgFlee 1.2s ease-out forwards;
+}
+
+@keyframes mgFlee {
+    0% { transform: translate(0, 0); opacity: 1; }
+    100% { transform: translate(14px, 8px); opacity: 0; }
+}
+
+.mg-cut {
+    animation: mgCut 0.35s ease-out forwards;
+}
+
+@keyframes mgCut {
+    to { transform: translateY(6px); opacity: 0; }
+}
+
+.mg-petal {
+    animation: mgPetal 0.7s ease-out forwards;
+}
+
+@keyframes mgPetal {
+    to { transform: translate(6px, -10px); opacity: 0; }
+}
+
+.mg-drop {
+    animation: mgDrop 0.5s linear infinite;
+}
+
+@keyframes mgDrop {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(10px); opacity: 0; }
+}
+
+.mg-watcher {
+    pointer-events: none;
+}
+
+@media (max-width: 760px) {
+    .mg-head {
+        flex-wrap: wrap;
+    }
+    .mg-hint {
+        order: 3;
+        flex-basis: 100%;
+        font-size: 0.88rem;
+    }
+    .mg-done {
+        font-size: 0.95rem;
+        padding: 5px 14px 6px;
+    }
+    .mg-message { font-size: 1.05rem; }
+    .level-buttons { grid-template-columns: 1fr; gap: 10px; }
+    .level-btn { flex-direction: row; justify-content: flex-start; gap: 14px; padding: 8px 14px; }
+    .level-art { width: 64px; height: 64px; }
+    .start-card h2 { font-size: 1.6rem; }
+    #choices > .choice-btn.play-btn { font-size: 1.3rem; min-height: 64px; }
+    .valley svg { height: clamp(110px, 20vh, 160px); }
+}
+
+/* Mini oyun ortak parçaları: sürüklenen nesneler, yağmur, duman */
+.mg-draggable { cursor: grab; }
+.mg-dragging { cursor: grabbing; }
+.mg-locked { cursor: default; }
+.mg-button { cursor: pointer; }
+
+.mg-pop-out {
+    animation: mgPopOut 0.22s ease-in forwards;
+}
+
+@keyframes mgPopOut {
+    to { opacity: 0; }
+}
+
+.mg-fade-in {
+    animation: fadeIn 0.6s ease;
+}
+
+.mg-rain {
+    animation: mgRain 0.7s linear infinite;
+}
+
+@keyframes mgRain {
+    from { opacity: 0.9; }
+    to { opacity: 0.2; }
+}
+
+.mg-smoke-up {
+    animation: mgSmokeUp 2.4s ease-out forwards;
+}
+
+@keyframes mgSmokeUp {
+    0% { transform: translate(0, 0) scale(0.6); opacity: 0.8; }
+    100% { transform: translate(8px, -34px) scale(2); opacity: 0; }
+}
+
+.mg-flame path {
+    animation: mgFlicker 0.35s ease-in-out infinite alternate;
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+}
+
+@keyframes mgFlicker {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0.85) scaleY(1.08); }
+}
+
+/* Can Vadisi 3B (Three.js tuvali) */
+.valley-canvas {
+    display: block;
+    width: 100%;
+    height: clamp(150px, 26vh, 240px);
+    touch-action: pan-y;
+    cursor: grab;
+}
+
+.valley-canvas:active {
+    cursor: grabbing;
+}
+
+.valley-hint {
+    position: absolute;
+    right: 12px;
+    bottom: 8px;
+    padding: 2px 10px 3px;
+    border-radius: 999px;
+    background: rgba(255, 249, 236, 0.75);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    pointer-events: none;
+    animation: valleyHintFade 1s ease 8s forwards;
+}
+
+@keyframes valleyHintFade {
+    to { opacity: 0; }
+}
+
+@media (max-width: 760px) {
+    .valley-canvas { height: clamp(130px, 22vh, 180px); }
+}
+
+/* ==========================================================
+   Yıl sonu şenliği
+   ========================================================== */
+
+.valley-compare {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+}
+
+.valley-card {
+    position: relative;
+    border: 3px solid #fff;
+    border-radius: 18px;
+    box-shadow: 0 5px 0 rgba(59, 42, 26, 0.12), 0 10px 20px rgba(59, 42, 26, 0.18);
+    overflow: hidden;
+    background: #BDE8F6;
+}
+
+.valley-card svg {
+    display: block;
+    width: 100%;
+    height: clamp(110px, 18vw, 170px);
+}
+
+.valley-cap {
+    position: absolute;
+    left: 10px;
+    top: 8px;
+    padding: 2px 10px 3px;
+    border-radius: 999px;
+    background: rgba(255, 249, 236, 0.92);
+    border: 2px solid #fff;
+    font-family: var(--font-title);
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+}
+
+.valley-arrow {
+    font-size: 2rem;
+    color: var(--green-dark);
+    animation: nudge 1s ease-in-out infinite;
+}
+
+.creature-card.dance .creature-art {
+    animation: creatureDance 0.9s ease-in-out infinite;
+}
+
+@keyframes creatureDance {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-8px) rotate(4deg); }
+}
+
+.final-details {
+    margin-top: 6px;
+    border: 3px dashed var(--paper-edge);
+    border-radius: 18px;
+    padding: 6px 14px;
+}
+
+.final-details summary {
+    cursor: pointer;
+    padding: 8px 4px;
+    font-family: var(--font-title);
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+}
+
+.final-details[open] summary {
+    color: var(--green-dark);
+}
+
+.final-details .final-section {
+    margin-top: 10px;
+}
+
+/* Şenlik oyunu */
+.mg-grow {
+    animation: mgGrow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+}
+
+@keyframes mgGrow {
+    from { transform: scale(0.4); }
+    to { transform: scale(1); }
+}
+
+.mg-cheer {
+    animation: mgCheer 0.6s ease;
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+}
+
+@keyframes mgCheer {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+@media (max-width: 760px) {
+    .valley-compare { grid-template-columns: 1fr; }
+    .valley-arrow { transform: rotate(90deg); justify-self: center; }
+    .valley-card svg { height: 130px; }
+}

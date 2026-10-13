@@ -1,12 +1,22 @@
 // Ses ve Müzik Yönetimi
+//
+// Seslendirme: sounds/<kimlik>.mp3 dosyası varsa o çalınır, yoksa tarayıcının Türkçe
+// konuşma sentezine düşülür. Dosya adları "Seslendirme Metinleri.docx" ile aynıdır:
+//   sahne metni      -> <sahneId>.mp3            (ör. ilkbahar_01.mp3, final_2.mp3)
+//   gecikmeli sonuç  -> sonuc_<sahneId>_<secenek>.mp3 (ör. sonuc_yaz_05_A.mp3)
+//   mutsuzluk olayı  -> mutsuz_<sahneId>.mp3     (ör. mutsuz_kis_01.mp3)
+// Bir sahne başka bir kaydı kullanacaksa senaryoda "ses" alanı verilir.
 (function() {
   'use strict';
 
+  const SOUND_DIR = 'sounds/';
   let audioEnabled = true;
   let backgroundMusic = null;
   const sounds = {};
+  const missing = new Set();      // bulunamayan efekt/müzik dosyaları
+  const fileStatus = {};          // seslendirme dosyası: 'ok' | 'missing'
 
-  // Ses dosyaları için yollar (kullanıcı ekleyebilir)
+  // Efekt ve müzik dosyaları (yoksa basit tonlar kullanılır)
   const audioPaths = {
     click: 'sounds/click.mp3',
     success: 'sounds/success.mp3',
@@ -15,85 +25,72 @@
     music_spring: 'sounds/music_spring.mp3',
     music_summer: 'sounds/music_summer.mp3',
     music_autumn: 'sounds/music_autumn.mp3',
-    music_winter: 'sounds/music_winter.mp3',
-    narration_spring: 'sounds/narration_spring.mp3',
-    narration_summer: 'sounds/narration_summer.mp3',
-    narration_autumn: 'sounds/narration_autumn.mp3',
-    narration_winter: 'sounds/narration_winter.mp3'
+    music_winter: 'sounds/music_winter.mp3'
   };
-  
+
   let narrationAudio = null;
+  let narrationToken = 0;
 
   // Web Audio API ile basit sesler oluştur (ses dosyası yoksa)
+  let audioContext = null;
   function createTone(frequency, duration, type = 'sine') {
     if (!audioEnabled) return null;
-    
     try {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
       oscillator.frequency.value = frequency;
       oscillator.type = type;
-      
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-      
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + duration);
-      
       return { audioContext, oscillator, gainNode };
     } catch (e) {
-      console.warn('Audio context not available:', e);
       return null;
     }
   }
 
-  // Ses çal
-  function playSound(soundName, useFallback = true) {
+  function fallbackTone(soundName) {
+    if (soundName === 'click') createTone(800, 0.1);
+    else if (soundName === 'success') createTone(600, 0.2, 'square');
+    else if (soundName === 'change') createTone(400, 0.15);
+    else if (soundName === 'season') createTone(520, 0.3, 'triangle');
+  }
+
+  // Ses efekti çal
+  function playSound(soundName) {
     if (!audioEnabled) return;
-    
-    const path = audioPaths[soundName];
-    if (path && sounds[soundName]) {
-      sounds[soundName].currentTime = 0;
-      sounds[soundName].play().catch(e => {
-        if (useFallback) {
-          // Fallback: basit ton
-          if (soundName === 'click') createTone(800, 0.1);
-          else if (soundName === 'success') createTone(600, 0.2, 'square');
-          else if (soundName === 'change') createTone(400, 0.15);
-        }
+    const audio = sounds[soundName];
+    if (audio && !missing.has(soundName)) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {
+        missing.add(soundName);
+        fallbackTone(soundName);
       });
-    } else if (useFallback) {
-      // Fallback sesler
-      if (soundName === 'click') createTone(800, 0.1);
-      else if (soundName === 'success') createTone(600, 0.2, 'square');
-      else if (soundName === 'change') createTone(400, 0.15);
+    } else {
+      fallbackTone(soundName);
     }
   }
 
   // Müzik çal
   function playMusic(season) {
     if (!audioEnabled) return;
-    
     stopMusic();
-    
     const musicMap = {
       'İlkbahar': 'music_spring',
       'Yaz': 'music_summer',
       'Sonbahar': 'music_autumn',
       'Kış': 'music_winter'
     };
-    
     const musicName = musicMap[season];
-    if (musicName && sounds[musicName]) {
+    if (musicName && sounds[musicName] && !missing.has(musicName)) {
       backgroundMusic = sounds[musicName];
       backgroundMusic.loop = true;
       backgroundMusic.volume = 0.3;
-      backgroundMusic.play().catch(e => console.warn('Music play failed:', e));
+      backgroundMusic.play().catch(() => { missing.add(musicName); backgroundMusic = null; });
     }
   }
 
@@ -106,132 +103,117 @@
     }
   }
 
-  // Sesleri yükle
+  // Efekt ve müzik nesnelerini hazırla (dosya ilk çalışta yüklenir)
   function loadSounds() {
     Object.keys(audioPaths).forEach(key => {
       const audio = new Audio();
-      audio.preload = 'auto';
+      audio.preload = 'none';
       audio.volume = 0.5;
-      sounds[key] = audio;
-      
-      // Ses dosyası varsa yükle, yoksa sessiz kal
       audio.src = audioPaths[key];
-      audio.load();
+      sounds[key] = audio;
     });
   }
 
-  // Türkçe seslendirme (Web Speech API)
-  function playNarration(sceneId, text, options = {}) {
-    if (!audioEnabled) return;
-    
-    // Web Speech API kontrolü
-    if (!('speechSynthesis' in window)) {
-      console.warn('Speech synthesis not supported');
-      return;
-    }
-    
-    // Mini dönüt seslendirmesi ise önceki seslendirmeyi durdurma
-    const isFeedback = options.isFeedback || false;
-    
-    // Önceki seslendirmeyi durdur (sadece mini dönüt değilse)
-    if (!isFeedback && window.speechSynthesis.speaking) {
-      window.speechSynthesis.cancel();
-    }
-    
-    // Metin yoksa scene ID'den metni al
-    if (!text && window.GameEngine) {
-      const scene = window.GameEngine.getScene(sceneId);
-      if (scene && scene.text) {
-        text = scene.text;
-      }
-    }
-    
-    if (!text) return;
-    
-    // SpeechSynthesisUtterance oluştur
+  // ---------- Türkçe seslendirme ----------
+  function selectTurkishVoice(voices) {
+    const isTr = (v) => v.lang.toLowerCase().startsWith('tr') || /turkish|türkçe/i.test(v.name);
+    const female = voices.find(v => isTr(v) && /female|kadın|woman|zira|aylin|emel|seda/i.test(v.name));
+    return female || voices.find(isTr) || null;
+  }
+
+  // Konuşma sentezi; bitince done() çağrılır
+  function speak(text, options, done) {
+    if (!text || !('speechSynthesis' in window)) { if (done) done(); return; }
     const utterance = new SpeechSynthesisUtterance(text);
-    
-    // Türkçe dil ayarı
     utterance.lang = 'tr-TR';
-    utterance.rate = options.rate || 1.1; // Konuşma hızı (0.1 - 10), normal için 1.1 (daha hızlı)
-    utterance.pitch = options.pitch || 1.2; // Ses tonu (0 - 2), kadın sesi için
-    utterance.volume = options.volume || 0.8; // Ses seviyesi (0 - 1)
-    
-    // Türkçe kadın sesi seçimi
-    function selectTurkishFemaleVoice(voices) {
-      // Önce Türkçe kadın seslerini ara
-      let turkishFemaleVoice = voices.find(voice => {
-        const name = voice.name.toLowerCase();
-        const lang = voice.lang.toLowerCase();
-        return (lang.startsWith('tr') || name.includes('turkish') || name.includes('türkçe')) &&
-               (name.includes('female') || name.includes('kadın') || name.includes('woman') || 
-                name.includes('zira') || name.includes('aylin') || voice.gender === 'female');
-      });
-      
-      // Kadın sesi bulunamazsa, Türkçe seslerden yüksek perdeli olanı seç
-      if (!turkishFemaleVoice) {
-        const turkishVoices = voices.filter(voice => {
-          const name = voice.name.toLowerCase();
-          const lang = voice.lang.toLowerCase();
-          return lang.startsWith('tr') || name.includes('turkish') || name.includes('türkçe');
-        });
-        
-        // Yüksek perde (pitch) değerine sahip sesi seç (genellikle kadın sesleri daha yüksek)
-        if (turkishVoices.length > 0) {
-          turkishFemaleVoice = turkishVoices.reduce((prev, current) => {
-            // Bazı tarayıcılarda defaultPitch özelliği olabilir
-            return (current.defaultPitch || 1.0) > (prev.defaultPitch || 1.0) ? current : prev;
-          });
-        }
-      }
-      
-      // Hala bulunamazsa, herhangi bir Türkçe ses
-      if (!turkishFemaleVoice) {
-        turkishFemaleVoice = voices.find(voice => {
-          const name = voice.name.toLowerCase();
-          const lang = voice.lang.toLowerCase();
-          return lang.startsWith('tr') || name.includes('turkish') || name.includes('türkçe');
-        });
-      }
-      
-      return turkishFemaleVoice;
-    }
-    
-    const voices = window.speechSynthesis.getVoices();
-    const selectedVoice = selectTurkishFemaleVoice(voices);
-    
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
-      // Kadın sesi için pitch'i biraz artır
-      utterance.pitch = 1.2;
-    }
-    
-    // Sesler yüklenmemişse bekle
-    if (voices.length === 0) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        const updatedVoices = window.speechSynthesis.getVoices();
-        const selectedVoice = selectTurkishFemaleVoice(updatedVoices);
-        if (selectedVoice) {
-          utterance.voice = selectedVoice;
-          utterance.pitch = 1.2;
-        }
-        window.speechSynthesis.speak(utterance);
-      };
-    } else {
+    utterance.rate = (options && options.rate) || 1.05;
+    utterance.pitch = (options && options.pitch) || 1.15;
+    utterance.volume = (options && options.volume) || 0.9;
+    let finished = false;
+    const finish = () => { if (!finished) { finished = true; if (done) done(); } };
+    utterance.onend = finish;
+    utterance.onerror = finish;
+    const start = () => {
+      const voice = selectTurkishVoice(window.speechSynthesis.getVoices());
+      if (voice) utterance.voice = voice;
       window.speechSynthesis.speak(utterance);
-    }
-    
-    // Hata yönetimi
-    utterance.onerror = (event) => {
-      console.warn('Speech synthesis error:', event);
     };
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.onvoiceschanged = null; start(); };
+      // Sesler hiç gelmezse yine de dene
+      setTimeout(() => { if (!window.speechSynthesis.speaking && !finished) start(); }, 400);
+    } else {
+      start();
+    }
+  }
+
+  // Kayıtlı dosyayı dener; ok(true) çalmaya başlayınca, ok(false) dosya yoksa
+  function playFile(id, ended, ok) {
+    if (!id || fileStatus[id] === 'missing') { ok(false); return; }
+    const audio = new Audio(SOUND_DIR + id + '.mp3');
+    audio.preload = 'auto';
+    audio.volume = 0.95;
+    narrationAudio = audio;
+    let decided = false;
+    audio.onerror = () => {
+      fileStatus[id] = 'missing';
+      if (narrationAudio === audio) narrationAudio = null;
+      if (!decided) { decided = true; ok(false); }
+    };
+    audio.oncanplay = () => {
+      if (decided) return;
+      decided = true;
+      fileStatus[id] = 'ok';
+      audio.play().then(() => ok(true)).catch(() => { ok(false); });
+    };
+    audio.onended = () => { if (narrationAudio === audio) narrationAudio = null; if (ended) ended(); };
+    audio.load();
+  }
+
+  // Tek bir metni seslendir: önce dosya, yoksa konuşma sentezi
+  function narrate(item, done, token) {
+    const text = item.text;
+    playFile(item.id, () => { if (token === narrationToken && done) done(); }, (played) => {
+      if (token !== narrationToken) return;
+      if (!played) speak(text, item.options, () => { if (token === narrationToken && done) done(); });
+    });
+  }
+
+  function playNarration(sceneId, text, options) {
+    if (!audioEnabled) return;
+    stopNarration();
+    const token = ++narrationToken;
+    narrate({ id: sceneId, text, options }, null, token);
+  }
+
+  // Birden çok parçayı sırayla seslendir ("Kararların iz bıraktı" sahnesi)
+  function playNarrationList(items) {
+    if (!audioEnabled || !items || !items.length) return;
+    stopNarration();
+    const token = ++narrationToken;
+    let i = 0;
+    const next = () => {
+      if (token !== narrationToken || i >= items.length) return;
+      const item = items[i++];
+      narrate(item, () => setTimeout(next, 350), token);
+    };
+    next();
   }
 
   // Seslendirmeyi durdur
   function stopNarration() {
-    if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+    narrationToken++;
+    if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
+    if (narrationAudio) {
+      narrationAudio.pause();
+      narrationAudio = null;
+    }
+  }
+
+  function isNarrating() {
+    return !!narrationAudio || ('speechSynthesis' in window && window.speechSynthesis.speaking);
   }
 
   // Ses aç/kapat
@@ -240,16 +222,9 @@
     if (!audioEnabled) {
       stopMusic();
       stopNarration();
-      if (narrationAudio) {
-        narrationAudio.pause();
-        narrationAudio = null;
-      }
     } else {
-      // Mevcut mevsim müziğini çal
       const seasonEl = document.getElementById('uiSeason');
-      if (seasonEl) {
-        playMusic(seasonEl.textContent);
-      }
+      if (seasonEl) playMusic(seasonEl.textContent.trim());
     }
     return audioEnabled;
   }
@@ -263,10 +238,11 @@
     playMusic,
     stopMusic,
     playNarration,
+    playNarrationList,
     stopNarration,
+    isNarrating,
     toggleAudio,
     isEnabled: () => audioEnabled
   };
 
 })();
-
