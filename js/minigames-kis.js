@@ -273,10 +273,11 @@
           const t = placedList.length;
           const atHouse = placedList.filter(z => z === 'ev').length;
           const atField = placedList.filter(z => z === 'tarla').length;
-          let choice, stars, message;
+          let choice, stars, message, ses;
           if (t === 0) {
             choice = 'C';
             stars = fences >= 3 ? 3 : fences >= 1 ? 2 : 1;
+            ses = fences ? 'C_cit' : 'C_bos';
             message = fences ? 'Yiyecek bırakmadın ama çalılıkları korudun. Saklanacak yerim çok!' : 'Yiyecek de bırakmadın, çalılıkları da korumadın. Bu kış zor geçecek…';
           } else if (atHouse + atField >= 2 || t >= 6) {
             choice = 'A';
@@ -287,7 +288,7 @@
             stars = t >= 2 && t <= 4 ? 3 : 2;
             message = 'Orman kenarına azar azar yiyecek bırakıldı. Karnım doydu, sonra yine avlanmaya gittim.';
           }
-          return { choice, stars, message, skill: `${t} yiyecek, ${fences} korunan çalılık.` };
+          return { choice, stars, message, ses, skill: `${t} yiyecek, ${fences} korunan çalılık.` };
         }
       };
     }

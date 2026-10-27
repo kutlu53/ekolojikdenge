@@ -144,7 +144,8 @@
             : choice === 'A'
               ? 'Yapraklar arabaya gitti. Yol tertemiz, köklerimin üstü ise çıplak…'
               : 'Yapraklar köklerimin üstüne serildi. Sıcacık bir yorgan!';
-          return { choice, stars, message, skill: `Yolun %${Math.round(cleared * 100)}'i temizlendi.` };
+          const ses = choice === 'A' ? 'A' : (deposited === 0 ? 'B_hic' : 'B_agac');
+          return { choice, stars, message, ses, skill: `Yolun %${Math.round(cleared * 100)}'i temizlendi.` };
         }
       };
     }

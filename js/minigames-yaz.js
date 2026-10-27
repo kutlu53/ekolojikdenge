@@ -137,7 +137,8 @@
             message = 'Büyük çöpler toplandı. Küçük plastikler ise kumda ve suda kaldı…';
           }
           const stars = bigFrac >= 0.99 ? 3 : bigFrac >= 0.6 ? 2 : 1;
-          return { choice, stars, message, skill: `Büyük çöplerin %${Math.round(bigFrac * 100)}'i toplandı.` };
+          const ses = choice === 'B' ? (called ? 'B_koy' : 'B_tek') : 'A';
+          return { choice, stars, message, ses, skill: `Büyük çöplerin %${Math.round(bigFrac * 100)}'i toplandı.` };
         }
       };
     }

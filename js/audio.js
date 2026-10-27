@@ -5,6 +5,8 @@
 //   sahne metni      -> <sahneId>.mp3            (ör. ilkbahar_01.mp3, final_2.mp3)
 //   gecikmeli sonuç  -> sonuc_<sahneId>_<secenek>.mp3 (ör. sonuc_yaz_05_A.mp3)
 //   mutsuzluk olayı  -> mutsuz_<sahneId>.mp3     (ör. mutsuz_kis_01.mp3)
+//   mini oyun açıklaması -> oyun_<oyun>_<sınıf>.mp3, yoksa oyun_<oyun>.mp3
+//   mini oyun sonucu     -> oyun_sonuc_<oyun>_<seçenek>.mp3, yoksa oyun_sonuc_<oyun>.mp3
 // Bir sahne başka bir kaydı kullanacaksa senaryoda "ses" alanı verilir.
 (function() {
   'use strict';
@@ -147,8 +149,18 @@
     }
   }
 
-  // Kayıtlı dosyayı dener; ok(true) çalmaya başlayınca, ok(false) dosya yoksa
+  // Kayıtlı dosyayı dener; ok(true) çalmaya başlayınca, ok(false) dosya yoksa.
+  // id bir dizi ise sırayla denenir (ör. önce sınıfa özel kayıt, sonra genel kayıt).
   function playFile(id, ended, ok) {
+    const ids = (Array.isArray(id) ? id : [id]).filter(Boolean);
+    const tryAt = (i) => {
+      if (i >= ids.length) { ok(false); return; }
+      playOne(ids[i], ended, (played) => { if (played) ok(true); else tryAt(i + 1); });
+    };
+    tryAt(0);
+  }
+
+  function playOne(id, ended, ok) {
     if (!id || fileStatus[id] === 'missing') { ok(false); return; }
     const audio = new Audio(SOUND_DIR + id + '.mp3');
     audio.preload = 'auto';

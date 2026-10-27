@@ -7,10 +7,12 @@
 //   title     : başlık
 //   role      : hangi canlının oyunu (ari, balik, agac, tilki)
 //   duration  : saniye; yoksa süre sınırı yok
-//   openEnded : true ise "Bitti" düğmesi gösterilir
+//   openEnded : true ise süre sınırı yoktur (her oyunda "Bitti" düğmesi vardır; süreli
+//               oyunlarda süre dolunca da biter, erken bitirmek için Bitti'ye basılır)
 //   howTo(lv) : açıklama satırları [{ ico, text }]
 //   start(ctx): oyunu kurar; { tick(dt, elapsed), end() } döndürür
-//               end() -> { choice: "A"|"B"|"C", stars: 1-3, message }
+//               end() -> { choice: "A"|"B"|"C", stars: 1-3, message, ses? }
+//               ses: aynı seçeneğin birden çok sonuç cümlesi varsa kayıt adı eki (ör. "B_koy")
 //
 // ctx: { svg, state, level, params, setHint(text), finish() }
 // Sahne: SVG, viewBox 0 0 120 90 (telefon dik tutulsa da sığar)
@@ -793,7 +795,7 @@
           <div class="mg-head">
             <div class="mg-title">${game.title}</div>
             <div class="mg-hint"></div>
-            ${game.openEnded ? '<button class="mg-done" type="button">Bitti ✓</button>' : ''}
+            <button class="mg-done" type="button">Bitti ✓</button>
           </div>
           ${duration ? '<div class="mg-timer"><div class="mg-timer-fill"></div></div>' : ''}
           <div class="mg-stage"><svg viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg></div>
@@ -826,7 +828,8 @@
       // Açıklamayı seslendir (küçükler okuyamayabilir)
       const plain = game.howTo(level, params).map(r => r.text.replace(/<[^>]+>/g, '')).join(' ');
       if (window.AudioManager && window.AudioManager.playNarration) {
-        setTimeout(() => window.AudioManager.playNarration('oyun_' + name, game.title + '. ' + plain), 400);
+        // Önce sınıfa özel kayıt (oyun_<ad>_<sınıf>.mp3), yoksa genel kayıt (oyun_<ad>.mp3)
+        setTimeout(() => window.AudioManager.playNarration(['oyun_' + name + '_' + level, 'oyun_' + name], game.title + '. ' + plain), 400);
       }
 
       function frame(now) {
@@ -885,7 +888,9 @@
           if (window.AudioManager.stopNarration) window.AudioManager.stopNarration();
           window.AudioManager.playSound('success');
           if (window.AudioManager.playNarration) {
-            setTimeout(() => window.AudioManager.playNarration('oyun_sonuc_' + name, (result.message || '')), 300);
+            // Sonuç cümlesi seçeneğe göre değişir: oyun_sonuc_<ad>_<seçenek>.mp3 (result.ses varsa o), yoksa oyun_sonuc_<ad>.mp3
+            const sesId = 'oyun_sonuc_' + name + '_' + (result.ses || result.choice);
+            setTimeout(() => window.AudioManager.playNarration([sesId, 'oyun_sonuc_' + name], (result.message || '')), 300);
           }
         }
         panel.querySelector('.mg-start').onclick = () => {

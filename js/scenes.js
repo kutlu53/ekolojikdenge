@@ -324,7 +324,7 @@ window.SCENES = [
       { id: "B", label: "Birkaç fidan dikildi", next: "kis_05b", simdi: {} }
     ]
   },
-  { id: "kis_05a", season: "Kış", role: "tilki", ses: "kis_05b", text: "Çocuklar ve büyükler birlikte fidan dikti.\nÇalıların arasına şimdiden kuşlar kondu.\nOrman biraz daha kalabalık olacak.", choices: null, autoNext: "FINAL_PICK" },
+  { id: "kis_05a", season: "Kış", role: "tilki", text: "Çocuklar ve büyükler birlikte fidan dikti.\nÇalıların arasına şimdiden kuşlar kondu.\nOrman biraz daha kalabalık olacak.", choices: null, autoNext: "FINAL_PICK" },
   { id: "kis_05b", season: "Kış", role: "tilki", text: "Birkaç fidan dikildi, gerisi bahara kaldı.\nYine de herkes şenlik için heyecanlı!", choices: null, autoNext: "FINAL_PICK" },
 
   // Final geçiş sahnesi
