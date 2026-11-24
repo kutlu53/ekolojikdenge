@@ -827,9 +827,10 @@
 
       // Açıklamayı seslendir (küçükler okuyamayabilir)
       const plain = game.howTo(level, params).map(r => r.text.replace(/<[^>]+>/g, '')).join(' ');
-      if (window.AudioManager && window.AudioManager.playNarration) {
-        // Önce sınıfa özel kayıt (oyun_<ad>_<sınıf>.mp3), yoksa genel kayıt (oyun_<ad>.mp3)
-        setTimeout(() => window.AudioManager.playNarration(['oyun_' + name + '_' + level, 'oyun_' + name], game.title + '. ' + plain), 400);
+      if (window.AudioManager && window.AudioManager.scheduleNarration) {
+        // Önce sınıfa özel kayıt (oyun_<ad>_<sınıf>.mp3), yoksa genel kayıt (oyun_<ad>.mp3).
+        // Gecikme bitmeden "Başla!"ya basılırsa açıklama hiç başlamaz.
+        window.AudioManager.scheduleNarration(400, ['oyun_' + name + '_' + level, 'oyun_' + name], game.title + '. ' + plain);
       }
 
       function frame(now) {
@@ -887,10 +888,10 @@
         if (window.AudioManager) {
           if (window.AudioManager.stopNarration) window.AudioManager.stopNarration();
           window.AudioManager.playSound('success');
-          if (window.AudioManager.playNarration) {
+          if (window.AudioManager.scheduleNarration) {
             // Sonuç cümlesi seçeneğe göre değişir: oyun_sonuc_<ad>_<seçenek>.mp3 (result.ses varsa o), yoksa oyun_sonuc_<ad>.mp3
             const sesId = 'oyun_sonuc_' + name + '_' + (result.ses || result.choice);
-            setTimeout(() => window.AudioManager.playNarration([sesId, 'oyun_sonuc_' + name], (result.message || '')), 300);
+            window.AudioManager.scheduleNarration(300, [sesId, 'oyun_sonuc_' + name], (result.message || ''));
           }
         }
         panel.querySelector('.mg-start').onclick = () => {

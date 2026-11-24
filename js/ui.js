@@ -237,6 +237,8 @@
   function showStartOverlay() {
     let overlay = document.getElementById("startOverlay");
     if (overlay) overlay.remove();
+    // Yeniden başlatmada önceki sahnenin seslendirmesi açılış ekranında sürmesin
+    if (window.AudioManager && window.AudioManager.stopNarration) window.AudioManager.stopNarration();
     overlay = document.createElement("div");
     overlay.id = "startOverlay";
     overlay.className = "start-overlay";
@@ -266,8 +268,8 @@
           engine.newGame(btn.getAttribute("data-level"));
         };
       });
-      if (window.AudioManager && window.AudioManager.playNarration) {
-        setTimeout(() => window.AudioManager.playNarration("sinif_sec", "Kaçıncı sınıftasın? Birinci ve ikinci sınıf, üçüncü dördüncü ve beşinci sınıf, ya da altıncı yedinci ve sekizinci sınıf."), 300);
+      if (window.AudioManager && window.AudioManager.scheduleNarration) {
+        window.AudioManager.scheduleNarration(300, "sinif_sec", "Kaçıncı sınıftasın? Birinci ve ikinci sınıf, üçüncü dördüncü ve beşinci sınıf, ya da altıncı yedinci ve sekizinci sınıf.");
       }
     };
 
@@ -371,19 +373,17 @@
     setCan(state, role);
     
     // Sahneyi seslendir: kayıtlı dosya varsa o, yoksa konuşma sentezi
-    if (window.AudioManager && window.AudioManager.playNarration) {
+    // Gecikme bitmeden bir düğmeye basılırsa ya da sahne değişirse seslendirme hiç başlamaz
+    if (window.AudioManager && window.AudioManager.scheduleNarration) {
       window.AudioManager.stopNarration();
-      setTimeout(() => {
-        if (window.GameEngine.getState().currentSceneId !== scene.id) return;
-        if (scene.isEcho) {
-          window.AudioManager.playNarrationList(scene.items.map(item => ({
-            id: item.mood ? ('mutsuz_' + item.target) : ('sonuc_' + item.scene + '_' + item.choice),
-            text: item.text
-          })));
-        } else if (scene.text) {
-          window.AudioManager.playNarration(scene.ses || scene.id, scene.text);
-        }
-      }, 350);
+      if (scene.isEcho) {
+        window.AudioManager.scheduleNarrationList(350, scene.items.map(item => ({
+          id: item.mood ? ('mutsuz_' + item.target) : ('sonuc_' + item.scene + '_' + item.choice),
+          text: item.text
+        })));
+      } else if (scene.text) {
+        window.AudioManager.scheduleNarration(350, scene.ses || scene.id, scene.text);
+      }
     }
     
     // Fade-in sınıfını kaldır (eğer varsa)

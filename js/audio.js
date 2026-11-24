@@ -222,7 +222,23 @@
     next();
   }
 
-  // Seslendirmeyi durdur
+  // Seslendirmeyi kısa bir gecikmeyle başlatır (ekran geçişi otursun diye).
+  // Arada seslendirme durdurulur ya da başka bir seslendirme başlarsa (ör. çocuk hemen bir
+  // düğmeye bastı) bekleyen kayıt hiç başlamaz; böylece önceki ekranın sesi yeni ekranda çalmaz.
+  function afterDelay(delay, start) {
+    const token = narrationToken;
+    setTimeout(() => { if (token === narrationToken) start(); }, delay);
+  }
+
+  function scheduleNarration(delay, sceneId, text, options) {
+    afterDelay(delay, () => playNarration(sceneId, text, options));
+  }
+
+  function scheduleNarrationList(delay, items) {
+    afterDelay(delay, () => playNarrationList(items));
+  }
+
+  // Seslendirmeyi durdur (bekleyen gecikmeli seslendirmeyi de iptal eder)
   function stopNarration() {
     narrationToken++;
     if ('speechSynthesis' in window) {
@@ -261,6 +277,8 @@
     stopMusic,
     playNarration,
     playNarrationList,
+    scheduleNarration,
+    scheduleNarrationList,
     stopNarration,
     isNarrating,
     toggleAudio,
