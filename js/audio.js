@@ -1,7 +1,8 @@
 // Ses ve Müzik Yönetimi
 //
-// Seslendirme: sounds/<kimlik>.mp3 dosyası varsa o çalınır, yoksa tarayıcının Türkçe
-// konuşma sentezine düşülür. Dosya adları "Seslendirme Metinleri.docx" ile aynıdır:
+// Seslendirme: sounds/<kimlik>.m4a (yoksa .mp3) dosyası varsa o çalınır, yoksa tarayıcının
+// Türkçe konuşma sentezine düşülür. Dosya adları "Seslendirme Metinleri.docx" ile aynıdır
+// (aşağıdaki örneklerde .mp3 yazan yerde .m4a da olur):
 //   sahne metni      -> <sahneId>.mp3            (ör. ilkbahar_01.mp3, final_2.mp3)
 //   gecikmeli sonuç  -> sonuc_<sahneId>_<secenek>.mp3 (ör. sonuc_yaz_05_A.mp3)
 //   mutsuzluk olayı  -> mutsuz_<sahneId>.mp3     (ör. mutsuz_kis_01.mp3)
@@ -12,6 +13,7 @@
   'use strict';
 
   const SOUND_DIR = 'sounds/';
+  const NARRATION_EXTS = ['m4a', 'mp3'];   // seslendirme kayıtları bu sırayla aranır
   let audioEnabled = true;
   let backgroundMusic = null;
   const sounds = {};
@@ -153,33 +155,41 @@
   // id bir dizi ise sırayla denenir (ör. önce sınıfa özel kayıt, sonra genel kayıt).
   function playFile(id, ended, ok) {
     const ids = (Array.isArray(id) ? id : [id]).filter(Boolean);
+    const token = narrationToken;
     const tryAt = (i) => {
       if (i >= ids.length) { ok(false); return; }
-      playOne(ids[i], ended, (played) => { if (played) ok(true); else tryAt(i + 1); });
+      playOne(ids[i], token, ended, (played) => { if (played) ok(true); else tryAt(i + 1); });
     };
     tryAt(0);
   }
 
-  function playOne(id, ended, ok) {
+  // Bir kaydı uzantıları sırayla deneyerek çalar (önce .m4a, yoksa .mp3).
+  // Dosya yüklenirken seslendirme durdurulduysa (token değişti) sessizce vazgeçer.
+  function playOne(id, token, ended, ok) {
     if (!id || fileStatus[id] === 'missing') { ok(false); return; }
-    const audio = new Audio(SOUND_DIR + id + '.mp3');
-    audio.preload = 'auto';
-    audio.volume = 0.95;
-    narrationAudio = audio;
-    let decided = false;
-    audio.onerror = () => {
-      fileStatus[id] = 'missing';
-      if (narrationAudio === audio) narrationAudio = null;
-      if (!decided) { decided = true; ok(false); }
+    const tryExt = (i) => {
+      if (token !== narrationToken) return;
+      if (i >= NARRATION_EXTS.length) { fileStatus[id] = 'missing'; ok(false); return; }
+      const audio = new Audio(SOUND_DIR + id + '.' + NARRATION_EXTS[i]);
+      audio.preload = 'auto';
+      audio.volume = 0.95;
+      narrationAudio = audio;
+      let decided = false;
+      audio.onerror = () => {
+        if (narrationAudio === audio) narrationAudio = null;
+        if (!decided) { decided = true; tryExt(i + 1); }
+      };
+      audio.oncanplay = () => {
+        if (decided) return;
+        decided = true;
+        if (token !== narrationToken) return;
+        fileStatus[id] = 'ok';
+        audio.play().then(() => ok(true)).catch(() => { ok(false); });
+      };
+      audio.onended = () => { if (narrationAudio === audio) narrationAudio = null; if (ended) ended(); };
+      audio.load();
     };
-    audio.oncanplay = () => {
-      if (decided) return;
-      decided = true;
-      fileStatus[id] = 'ok';
-      audio.play().then(() => ok(true)).catch(() => { ok(false); });
-    };
-    audio.onended = () => { if (narrationAudio === audio) narrationAudio = null; if (ended) ended(); };
-    audio.load();
+    tryExt(0);
   }
 
   // Tek bir metni seslendir: önce dosya, yoksa konuşma sentezi

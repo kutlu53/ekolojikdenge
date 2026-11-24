@@ -3,6 +3,12 @@
 Oyun, `sounds/` klasöründe kayıtlı bir dosya bulursa onu çalar; bulamazsa tarayıcının
 Türkçe konuşma sentezine düşer. Klasörün olmaması ya da eksik dosya oyunu bozmaz.
 
+Seslendirme kayıtları önce `.m4a`, yoksa `.mp3` uzantısıyla aranır; aşağıdaki tabloda `.mp3`
+yazan her yerde `.m4a` da olur. Efekt ve müzik dosyaları yalnızca `.mp3` olarak aranır.
+
+`sesler/` klasörü kayıt oturumundan gelen ham dosyalardır (`<ad>.m4a.mp4`, bazıları çift kopya);
+oyun bu klasörü okumaz. Oyunun okuduğu dosyalar `sounds/<ad>.m4a` olarak buradan kopyalanır.
+
 ## Dosya adlandırma
 
 | Ne | Dosya adı | Örnek |
